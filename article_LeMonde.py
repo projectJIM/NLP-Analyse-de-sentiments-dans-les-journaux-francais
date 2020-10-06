@@ -1,6 +1,6 @@
 import requests
 import bs4
-#Import BeautifulSoup (to parse what we download)
+#Import BeautifulSoup 
 from bs4 import BeautifulSoup
 
 #def recup(domaine):

@@ -60,11 +60,11 @@ df = pd.DataFrame({'Auteur':auteurTot,'Url':listeUrl ,'Titre':listTitre,'Texte':
 df.to_csv("C:\\Users\\idel\\Desktop\\M2\\Python\\LeMonde.csv",index=False)
 
 
-
+#Creation des 60 articles dans l'environnement globale
 for i in range(len(pageArticleTot)):
     globals()["Article_%s"%i]= ''.join(pageArticleTot[i])    
 
-
+df.head(5)
 
 
 #NLP
@@ -80,6 +80,197 @@ for i in range(len(pageArticleTot)):
 
 #python -m spacy download en_core_web_sm
 #python -m  spacy download fr_core_web_sm
+
+
+#import spacy
+
+
+
+import fr_core_news_sm
+import en_core_web_sm
+import nltk
+
+
+nlpEng = en_core_web_sm.load()
+nlp = fr_core_news_sm.load()
+
+
+#Nettoyage des articles de la dataframe en supprimant les mots stop
+
+#nltk.download('stopwords')
+from nltk.corpus import stopwords
+MotArret = set(stopwords.words('french'))
+
+
+tokenisation_Article=[]
+def return_token(sentence):
+    # Tokeniser la phrase
+    doc = nlp(sentence)
+    # Retourner le texte de chaque token
+    return [X.text for X in doc]
+
+for i in range(len(df)):
+    article = "".join(df.iloc[i,3])
+    tmp=return_token(article)
+    tokenisation_Article.append(tmp)
+
+tokenisation_Article[1]
+    
+#Suppression '\xa0'
+erreur = '\xa0'
+
+#suppression des erreur
+for i in range(len(tokenisation_Article)):
+
+    tokenisation_Article[i] = list(filter(lambda a: a != erreur, tokenisation_Article[i]))
+
+#☺Verificaition
+tokenisation_Article[1]
+
+
+#suppression des mots stop
+#for i in range(len(tokenisation_Article)):
+#    for j in range(len(tokenisation_Article[i])):
+#        tmp=[]
+#        mot=tokenisation_Article[i][j]
+#        if mot not in MotArret:
+#            tmp="".join(tokenisation_Article[i][j])
+#    
+#        tokenisation_Article_propre.append(tmp)
+     
+
+#suppression des mots stop , on met nos données dans une liste article Propre
+#utilisation d'une fonction     
+tokenisation_Article_propre=[]        
+for i in range(len(tokenisation_Article)):
+    tmp=(list(filter(lambda x: x not in MotArret, tokenisation_Article[i])))
+    tmp=" ".join(tmp)
+    tokenisation_Article_propre.append("".join(tmp))
+    
+#verification
+tokenisation_Article_propre[1]
+
+
+df['localisation']=''
+df['personne']=''
+df['entreprise']=''
+
+
+#Recuperer catégorie (Named entity recognition)
+#Ajout des lables dans notre dataframe
+#On recupere les Article Prore (corrigé des mots stop et erreur /xa0)
+def return_NER():
+    # Tokeniser la phrase
+    
+    for i in range(len(df)):
+        sentence=tokenisation_Article_propre[i]
+        doc = nlp(sentence)
+        localisation =[] 
+        personne=[]
+        entreprise=[]
+    # Retourner le texte et le label pour chaque entité
+        for X in doc.ents:
+            if X.label_=='LOC':
+                localisation.append(X.text)
+            elif X.label_=='ORG':
+                entreprise.append(X.text)
+            elif X.label_=='PER':
+                personne.append(X.text)
+                
+        df['localisation'][i]=localisation
+        df['personne'][i]=personne
+        df['entreprise'][i]=entreprise
+
+#Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
+return_NER()
+
+       
+
+#Comptage des occurence de mots
+#Mise en place d'un graphique sous forme de Bar Plot
+#Application du comptage de mot sur le deuxieme articles
+
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+maliste = tokenisation_Article_propre[2]
+maliste = maliste.split(".")
+
+
+# create a count vectorizer object
+count_vectorizer = CountVectorizer()
+# fit the count vectorizer using the text data
+count_vectorizer.fit(maliste)
+# collect the vocabulary items used in the vectorizer
+dictionary = count_vectorizer.vocabulary_.items()
+
+# lists to store the vocab and counts
+vocab = []
+count = []
+# iterate through each vocab and count append the value to designated lists
+for key, value in dictionary:
+    vocab.append(key)
+    count.append(value)
+# store the count in pandas dataframe with vocab as index
+vocab_bef_stem = pd.Series(count, index=vocab)
+# sort the dataframe
+vocab_bef_stem = vocab_bef_stem.sort_values(ascending=False)  
+
+top_vacab = vocab_bef_stem.head(30)
+top_vacab.plot(kind = 'barh', figsize=(5,10))
+
+
+#Frequence des mots
+
+from nltk.tokenize import word_tokenize
+from nltk.probability import FreqDist 
+token = return_token(tokenisation_Article_propre[2])
+fdist = FreqDist(token) 
+fdist1 = fdist.most_common(30) 
+fdist1
+
+#Stemming (recuperation de la racine des mots)  ou lemmatisation
+from nltk.stem.snowball import SnowballStemmer
+stemmer = SnowballStemmer("french")
+
+def stemming(text):    
+    '''a function which stems each word in the given text'''
+    text = [stemmer.stem(word) for word in text.split()]
+    return " ".join(text) 
+
+stem = stemming(tokenisation_Article_propre[2])
+token = return_token(stem)
+fdist = FreqDist(token) 
+fdist1 = fdist.most_common(30) 
+fdist1
+
+maliste = "".join(stem)
+maliste = maliste.split(".")
+# create a count vectorizer object
+count_vectorizer = CountVectorizer()
+# fit the count vectorizer using the text data
+count_vectorizer.fit(maliste)
+# collect the vocabulary items used in the vectorizer
+dictionary = count_vectorizer.vocabulary_.items()
+
+# lists to store the vocab and counts
+vocab = []
+count = []
+# iterate through each vocab and count append the value to designated lists
+for key, value in dictionary:
+    vocab.append(key)
+    count.append(value)
+# store the count in pandas dataframe with vocab as index
+vocab_bef_stem = pd.Series(count, index=vocab)
+# sort the dataframe
+vocab_bef_stem = vocab_bef_stem.sort_values(ascending=False)  
+
+top_vacab = vocab_bef_stem.head(30)
+top_vacab.plot(kind = 'barh', figsize=(5,10))
+
+
+
+
+
 
 
 

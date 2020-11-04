@@ -57,7 +57,7 @@ for i in range(len(listeUrl)):
 
 df = pd.DataFrame({'Auteur':auteurTot,'Url':listeUrl ,'Titre':listTitre,'Texte':pageArticleTot})
     
-df.to_csv("C:\\Users\\idel\\Desktop\\M2\\Python\\LeMonde.csv",index=False)
+#df.to_csv("C:\\Users\\idel\\Desktop\\M2\\Python\\LeMonde.csv",index=False)
 
 
 #Creation des 60 articles dans l'environnement globale
@@ -155,7 +155,6 @@ df['localisation']=''
 df['personne']=''
 df['entreprise']=''
 
-
 #Recuperer catégorie (Named entity recognition)
 #Ajout des lables dans notre dataframe
 #On recupere les Article Prore (corrigé des mots stop et erreur /xa0)
@@ -165,26 +164,67 @@ def return_NER():
     for i in range(len(df)):
         sentence=tokenisation_Article_propre[i]
         doc = nlp(sentence)
+        titre = nlp(df['Titre'][i])
         localisation =[] 
         personne=[]
         entreprise=[]
     # Retourner le texte et le label pour chaque entité
         for X in doc.ents:
-            if X.label_=='LOC':
-                localisation.append(X.text)
-            elif X.label_=='ORG':
-                entreprise.append(X.text)
+            if (X.label_=='ORG' ):
+                    entreprise.append(X.text)
+            elif X.label_=='LOC':
+                localisation.append(X.text)            
             elif X.label_=='PER':
                 personne.append(X.text)
-                
+        #Recupere les entreprises present dans le titre 
+        #(si cela n'a pas été le cas dans le texte)        
+        
+        for Y in titre.ents:
+            if (Y.label_=='ORG'):
+                entreprise.append(Y.text)
+        
         df['localisation'][i]=localisation
         df['personne'][i]=personne
         df['entreprise'][i]=entreprise
 
+        if(df['entreprise'][i]==[]):
+            df['entreprise'][i]=['nan']
+
 #Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
 return_NER()
 
-       
+#Sentiment (positive ou negative)
+ 
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+ 
+model = SentimentIntensityAnalyzer()
+ 
+def get_sentiment(text):
+    scores=model.polarity_scores(text)
+    return scores.get('compound')
+
+df["positive"]=""
+for i in range(len(df)):
+    positive = get_sentiment(tokenisation_Article_propre[i])>0.05
+    df["positive"][i]=positive
+
+
+#Ajout de la colonne l'entreprise qui va nous permettre d'ajouter l'entreprise
+#la plus cité, en concluant que c'est l'entreprise sur laquelle l'article est réalisé
+    
+df['L\'entreprise']=''
+
+from nltk.tokenize import word_tokenize
+from nltk.probability import FreqDist 
+for i in range(len(df)):
+    token = df['entreprise'][i]
+    fdist = FreqDist(token) 
+    mot = fdist.most_common(1)
+    
+    df['L\'entreprise'][i]=mot[0][0]
+
+
+
 
 #Comptage des occurence de mots
 #Mise en place d'un graphique sous forme de Bar Plot

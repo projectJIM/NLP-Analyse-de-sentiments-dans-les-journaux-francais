@@ -4,91 +4,82 @@ import bs4
 from bs4 import BeautifulSoup
 import pandas as pd
 
-#def recup(domaine):
-    
-requete = requests.get("https://www.lemonde.fr/entreprises/") 
-            
-page = requete.content
-soup = bs4.BeautifulSoup(page, 'lxml')
-
-  
-url = soup.find_all("a",attrs={"class":'teaser__link'})
-
-titre = soup.find_all("h3",attrs={"class":'teaser__title'})
-
-
-listeUrl = []
-listTitre = []
-
-for a in url :
-    listeUrl.append(a.get('href'))
-    
-    if len(listeUrl) ==100 :
-        break
-    
-for a in range(len(titre)) :
-    listTitre.append(titre[a].text)
-        
-    if len(listTitre) ==100 :
-        break
-
-
-pageArticleTot =[]
-auteurTot=[]
-
-for i in range(len(listeUrl)):
-    paragrapheTot=[]
-    
-    requeteUrl = requests.get(listeUrl[i])
-    pageUrl = requeteUrl.content
-    soupUrl = bs4.BeautifulSoup(pageUrl, 'lxml')
-    paragraphe = soupUrl.find_all("p",attrs={"class":'article__paragraph'})
-    
-    auteur = soupUrl.find("meta", {"property": "og:article:author"})
-    auteur = auteur['content'] if auteur else 'Inconnu'
-        
-    auteurTot.append(auteur)
-    
-    for i in paragraphe:
-        paragrapheTot.append(i.text)
-            
-    pageArticleTot.append(paragrapheTot)
-
-
-df = pd.DataFrame({'Auteur':auteurTot,'Url':listeUrl ,'Titre':listTitre,'Texte':pageArticleTot})
-    
-#df.to_csv("C:\\Users\\idel\\Desktop\\M2\\Python\\LeMonde.csv",index=False)
-
-
-#Creation des 60 articles dans l'environnement globale
-for i in range(len(pageArticleTot)):
-    globals()["Article_%s"%i]= ''.join(pageArticleTot[i])    
-
-df.head(5)
-
-
-#NLP
-
-
-#Intallation
-#pip install --upgrade pip
-#pip install spacy   
-#pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.1.0/en_core_web_sm-2.1.0.tar.gz
-#pip install https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-2.1.0/fr_core_news_sm-2.1.0.tar.gz
-
-#conda install -c conda-forge spacy-model-fr_core_news_sm
-
-#python -m spacy download en_core_web_sm
-#python -m  spacy download fr_core_web_sm
-
-
-#import spacy
-
-
 
 import fr_core_news_sm
 import en_core_web_sm
 import nltk
+
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from nltk.tokenize import word_tokenize
+from nltk.probability import FreqDist 
+
+
+def recupererArticle(domaine):
+        
+    requete = requests.get("https://www.lemonde.fr/"+domaine+"/") 
+                
+    page = requete.content
+    soup = bs4.BeautifulSoup(page, 'lxml')
+    
+      
+    url = soup.find_all("a",attrs={"class":'teaser__link'})
+    
+    titre = soup.find_all("h3",attrs={"class":'teaser__title'})
+    
+    
+    listeUrl = []
+    listTitre = []
+    
+    for a in url :
+        listeUrl.append(a.get('href'))
+        
+        if len(listeUrl) ==100 :
+            break
+        
+    for a in range(len(titre)) :
+        listTitre.append(titre[a].text)
+            
+        if len(listTitre) ==100 :
+            break
+    
+    
+    pageArticleTot =[]
+    auteurTot=[]
+    
+    for i in range(len(listeUrl)):
+        paragrapheTot=[]
+        
+        requeteUrl = requests.get(listeUrl[i])
+        pageUrl = requeteUrl.content
+        soupUrl = bs4.BeautifulSoup(pageUrl, 'lxml')
+        paragraphe = soupUrl.find_all("p",attrs={"class":'article__paragraph'})
+        
+        auteur = soupUrl.find("meta", {"property": "og:article:author"})
+        auteur = auteur['content'] if auteur else 'Inconnu'
+            
+        auteurTot.append(auteur)
+        
+        for i in paragraphe:
+            paragrapheTot.append(i.text)
+                
+        pageArticleTot.append(paragrapheTot)
+    
+    
+    df = pd.DataFrame({'Auteur':auteurTot,'Url':listeUrl ,'Titre':listTitre,'Texte':pageArticleTot})
+    
+    globals()['df']=df
+    
+
+#Scrapping et déplacement du scraping dans une dataframe d'un domaine présent dans journal Lemonde
+recupererArticle("entreprises")    
+
+
+
+#Intallation
+#pip install --upgrade pip
+
+#pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.1.0/en_core_web_sm-2.1.0.tar.gz
+#pip install https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-2.1.0/fr_core_news_sm-2.1.0.tar.gz
 
 
 nlpEng = en_core_web_sm.load()
@@ -97,60 +88,50 @@ nlp = fr_core_news_sm.load()
 
 #Nettoyage des articles de la dataframe en supprimant les mots stop
 
-#nltk.download('stopwords')
-from nltk.corpus import stopwords
-MotArret = set(stopwords.words('french'))
-
-
-tokenisation_Article=[]
-def return_token(sentence):
-    # Tokeniser la phrase
-    doc = nlp(sentence)
-    # Retourner le texte de chaque token
-    return [X.text for X in doc]
-
-for i in range(len(df)):
-    article = "".join(df.iloc[i,3])
-    tmp=return_token(article)
-    tokenisation_Article.append(tmp)
-
-tokenisation_Article[1]
+def nettoyageArticle():
+    #nltk.download('stopwords')
+    from nltk.corpus import stopwords
+    MotArret = set(stopwords.words('french'))
     
-#Suppression '\xa0'
-erreur = '\xa0'
-
-#suppression des erreur
-for i in range(len(tokenisation_Article)):
-
-    tokenisation_Article[i] = list(filter(lambda a: a != erreur, tokenisation_Article[i]))
-
-#☺Verificaition
-tokenisation_Article[1]
-
-
-#suppression des mots stop
-#for i in range(len(tokenisation_Article)):
-#    for j in range(len(tokenisation_Article[i])):
-#        tmp=[]
-#        mot=tokenisation_Article[i][j]
-#        if mot not in MotArret:
-#            tmp="".join(tokenisation_Article[i][j])
-#    
-#        tokenisation_Article_propre.append(tmp)
-     
-
-#suppression des mots stop , on met nos données dans une liste article Propre
-#utilisation d'une fonction     
-tokenisation_Article_propre=[]        
-for i in range(len(tokenisation_Article)):
-    tmp=(list(filter(lambda x: x not in MotArret, tokenisation_Article[i])))
-    tmp=" ".join(tmp)
-    tokenisation_Article_propre.append("".join(tmp))
     
-#verification
-tokenisation_Article_propre[1]
+    tokenisation_Article=[]
+    def return_token(sentence):
+        # Tokeniser la phrase
+        doc = nlp(sentence)
+        # Retourner le texte de chaque token
+        return [X.text for X in doc]
+    
+    for i in range(len(df)):
+        article = "".join(df.iloc[i,3])
+        tmp=return_token(article)
+        tokenisation_Article.append(tmp)
+    
+        
+    #Suppression '\xa0'
+    erreur = '\xa0'
+    
+    #suppression des erreur
+    for i in range(len(tokenisation_Article)):
+    
+        tokenisation_Article[i] = list(filter(lambda a: a != erreur, tokenisation_Article[i]))
+    
+    #suppression des mots stop , on met nos données dans une liste article Propre
+    #utilisation d'une fonction     
+    tokenisation_Article_propre=[]        
+    for i in range(len(tokenisation_Article)):
+        tmp=(list(filter(lambda x: x not in MotArret, tokenisation_Article[i])))
+        tmp=" ".join(tmp)
+        tokenisation_Article_propre.append("".join(tmp))
+        
+    
+    for i in range(len(df)):
+        df['Texte'][i]=tokenisation_Article_propre[i]
 
 
+
+
+
+    
 df['localisation']=''
 df['personne']=''
 df['entreprise']=''
@@ -158,11 +139,11 @@ df['entreprise']=''
 #Recuperer catégorie (Named entity recognition)
 #Ajout des lables dans notre dataframe
 #On recupere les Article Prore (corrigé des mots stop et erreur /xa0)
-def return_NER():
+def ajout_TAG():
     # Tokeniser la phrase
     
     for i in range(len(df)):
-        sentence=tokenisation_Article_propre[i]
+        sentence=df['Texte'][i]
         doc = nlp(sentence)
         titre = nlp(df['Titre'][i])
         localisation =[] 
@@ -190,23 +171,24 @@ def return_NER():
         if(df['entreprise'][i]==[]):
             df['entreprise'][i]=['nan']
 
-#Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
-return_NER()
+
+
 
 #Sentiment (positive ou negative)
- 
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
- 
-model = SentimentIntensityAnalyzer()
- 
-def get_sentiment(text):
-    scores=model.polarity_scores(text)
-    return scores.get('compound')
-
-df["positive"]=""
-for i in range(len(df)):
-    positive = get_sentiment(tokenisation_Article_propre[i])>0.05
-    df["positive"][i]=positive
+def ajoutSentiment():
+    
+     
+    model = SentimentIntensityAnalyzer()
+     
+    def get_sentiment(text):
+        scores=model.polarity_scores(text)
+        return scores.get('compound')
+    
+    df["positive"]=""
+    for i in range(len(df)):
+        positive = get_sentiment(df['Texte'][i])>0.05
+        df["positive"][i]=positive
+    
 
 
 #Ajout de la colonne l'entreprise qui va nous permettre d'ajouter l'entreprise
@@ -214,98 +196,115 @@ for i in range(len(df)):
     
 df['L\'entreprise']=''
 
-from nltk.tokenize import word_tokenize
-from nltk.probability import FreqDist 
-for i in range(len(df)):
-    token = df['entreprise'][i]
-    fdist = FreqDist(token) 
-    mot = fdist.most_common(1)
+#Fonction donnant l'entreprise concerné par l'article
+
+def ajoutEntreprise():
+    for i in range(len(df)):
+        token = df['entreprise'][i]
+        fdist = FreqDist(token) 
+        mot = fdist.most_common(1)
+        
+        df['L\'entreprise'][i]=mot[0][0]
+
+
+
+#Creation de la dataframe des media_francais et leurs influences
+
+media_francais=pd.read_excel('C:/Users/idel/Desktop/M2/Python/medias_francais.xlsx')
+
+#recuperation du PDG de chaque entreprise liée à chaque article
+
+df['PDG']=''
+
+def recupererPDG():
     
-    df['L\'entreprise'][i]=mot[0][0]
+    for i in range(len(df)):
+        try:
+            requete = requests.get("https://www.google.com/search?q=pdg+"+df['L\'entreprise'][i]+"&")
+            page = requete.content
+            soup = bs4.BeautifulSoup(page, 'lxml')  
+            secteur = soup.find("div",attrs={"class":'BNeawe deIvCb AP7Wnd'})
+            df['PDG'][i]=secteur.text
+        except:
+            continue
+        
+    #Suppression des erreurs
+    df['PDG'] = df['PDG'].str.replace('Autres questions posées','')
+    df['PDG'] = df['PDG'].str.replace('Images','')
+    df['PDG'] = df['PDG'].str.replace('Recherches associées','')
+    df['PDG'] = df['PDG'].str.replace('Afficher les résultats pour','')
+    
+    for i in range(len(df)):
+        if(df['PDG'][i]==df['L\'entreprise'][i]):
+            df['PDG'][i]= ''
+        
+    #Webscrapping de nouveau avec une nouvelle balise pour récupérer les pdg manquants
+    for i in range(len(df)):
+        if(df['PDG'][i]==''):
+            try:
+                requete = requests.get("https://www.google.com/search?q=pdg+de+"+df['L\'entreprise'][i]+"&")
+                page = requete.content
+                soup = bs4.BeautifulSoup(page, 'lxml')  
+                secteur = soup.find("div",attrs={"class":'BNeawe s3v9rd AP7Wnd'})
+                df['PDG'][i]=secteur.text
+            except:
+                continue
+    
+    import re
+    def existeDigit(inputString):
+        return bool(re.search(r'\d', inputString))
+    
+    #Suppression des PDG associé à NAN
+    for i in range(len(df)):
+        if(df['L\'entreprise'][i]=='nan'):
+            df['PDG'][i]=''
+    
+    #Recupere toute les phrase afin de les remplacer par le personnage cité dans la phrase
+    for i in range(len(df)):
+        if(len(df['PDG'][i])>30):
+            doc = nlp(df['PDG'][i])
+            for X in doc.ents:
+                if (X.label_=='PER' ):
+                    df['PDG'][i]=X.text
+    
+    #Suppression des textes tronquer présentant des chiffres 
+    for i in range(len(df)):
+        if(existeDigit(df['PDG'][i])==True):
+            df['PDG'][i]=''
 
 
 
 
-#Comptage des occurence de mots
-#Mise en place d'un graphique sous forme de Bar Plot
-#Application du comptage de mot sur le deuxieme articles
+#ajout de la présence du PDG comme détenteur d'un media
+df['Detient_Media']=False
 
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-
-maliste = tokenisation_Article_propre[2]
-maliste = maliste.split(".")
-
-
-# create a count vectorizer object
-count_vectorizer = CountVectorizer()
-# fit the count vectorizer using the text data
-count_vectorizer.fit(maliste)
-# collect the vocabulary items used in the vectorizer
-dictionary = count_vectorizer.vocabulary_.items()
-
-# lists to store the vocab and counts
-vocab = []
-count = []
-# iterate through each vocab and count append the value to designated lists
-for key, value in dictionary:
-    vocab.append(key)
-    count.append(value)
-# store the count in pandas dataframe with vocab as index
-vocab_bef_stem = pd.Series(count, index=vocab)
-# sort the dataframe
-vocab_bef_stem = vocab_bef_stem.sort_values(ascending=False)  
-
-top_vacab = vocab_bef_stem.head(30)
-top_vacab.plot(kind = 'barh', figsize=(5,10))
+def detientMedia():
+    for i in range(len(media_francais)):
+        for j in range(len(df)):
+            if(media_francais['nom'][i]==df['PDG'][j]):
+                df['Detient_Media'][j]=True
 
 
-#Frequence des mots
 
-from nltk.tokenize import word_tokenize
-from nltk.probability import FreqDist 
-token = return_token(tokenisation_Article_propre[2])
-fdist = FreqDist(token) 
-fdist1 = fdist.most_common(30) 
-fdist1
 
-#Stemming (recuperation de la racine des mots)  ou lemmatisation
-from nltk.stem.snowball import SnowballStemmer
-stemmer = SnowballStemmer("french")
+#Appel de la fonction pour nettoyer nos articles
+nettoyageArticle()
+#Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
+ajout_TAG()
+#Appel de la fonction pour ajouter un sentiment positive ou pas    
+ajoutSentiment()
+#Ajout de l'entreprise concerné par l'article
+ajoutEntreprise()
+#Ajout du nom du PDG
+recupererPDG()
+#Ajout de la Collusion oui ou Non 
+detientMedia()        
 
-def stemming(text):    
-    '''a function which stems each word in the given text'''
-    text = [stemmer.stem(word) for word in text.split()]
-    return " ".join(text) 
 
-stem = stemming(tokenisation_Article_propre[2])
-token = return_token(stem)
-fdist = FreqDist(token) 
-fdist1 = fdist.most_common(30) 
-fdist1
 
-maliste = "".join(stem)
-maliste = maliste.split(".")
-# create a count vectorizer object
-count_vectorizer = CountVectorizer()
-# fit the count vectorizer using the text data
-count_vectorizer.fit(maliste)
-# collect the vocabulary items used in the vectorizer
-dictionary = count_vectorizer.vocabulary_.items()
 
-# lists to store the vocab and counts
-vocab = []
-count = []
-# iterate through each vocab and count append the value to designated lists
-for key, value in dictionary:
-    vocab.append(key)
-    count.append(value)
-# store the count in pandas dataframe with vocab as index
-vocab_bef_stem = pd.Series(count, index=vocab)
-# sort the dataframe
-vocab_bef_stem = vocab_bef_stem.sort_values(ascending=False)  
 
-top_vacab = vocab_bef_stem.head(30)
-top_vacab.plot(kind = 'barh', figsize=(5,10))
+
 
 
 

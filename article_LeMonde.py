@@ -1,9 +1,9 @@
 import requests
 import bs4
-#Import BeautifulSoup 
+# Import BeautifulSoup (to parse what we download)
 from bs4 import BeautifulSoup
-import pandas as pd
 
+import pandas as pd
 
 import fr_core_news_sm
 import en_core_web_sm
@@ -63,25 +63,31 @@ def recupererArticle(domaine):
             paragrapheTot.append(i.text)
                 
         pageArticleTot.append(paragrapheTot)
+        
+    
+    #Suppression '\xa0'
+    erreur = '\xa0'
+    
+    for i in range(len(pageArticleTot)):
+    
+        pageArticleTot[i] = list(filter(lambda a: a != erreur, pageArticleTot[i]))
+    
+    df = pd.DataFrame({'Auteur':auteurTot,'Url':listeUrl ,'Titre':listTitre,'TexteOriginal':pageArticleTot,
+                       'Texte':pageArticleTot,
+                       'localisation':'','personne':'','entreprise':'','Positive':'','L\'entreprise':'','PDG':'',
+                       'Detient_Media':False,"localisationPrecise":''})
+
     
     
-    df = pd.DataFrame({'Auteur':auteurTot,'Url':listeUrl ,'Titre':listTitre,'Texte':pageArticleTot})
+
+    df['TexteOriginal'] = df['TexteOriginal'].astype(str)
+        
     
     globals()['df']=df
     
-
 #Scrapping et déplacement du scraping dans une dataframe d'un domaine présent dans journal Lemonde
 recupererArticle("entreprises")    
-
-
-
-#Intallation
-#pip install --upgrade pip
-
-#pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.1.0/en_core_web_sm-2.1.0.tar.gz
-#pip install https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-2.1.0/fr_core_news_sm-2.1.0.tar.gz
-
-
+ 
 nlpEng = en_core_web_sm.load()
 nlp = fr_core_news_sm.load()
 
@@ -128,13 +134,15 @@ def nettoyageArticle():
         df['Texte'][i]=tokenisation_Article_propre[i]
 
 
+    
+        df['Texte']=df['Texte'].astype(str)
 
+#Appel de la fonction pour nettoyer nos articles
+nettoyageArticle()
 
 
     
-df['localisation']=''
-df['personne']=''
-df['entreprise']=''
+
 
 #Recuperer catégorie (Named entity recognition)
 #Ajout des lables dans notre dataframe
@@ -172,8 +180,11 @@ def ajout_TAG():
             df['entreprise'][i]=['nan']
 
 
-
-
+    
+        df['localisation']=df['localisation'].astype(str)
+        df['personne']=df['personne'].astype(str)
+        df['entreprise']=df['entreprise'].astype(str)
+        
 #Sentiment (positive ou negative)
 def ajoutSentiment():
     
@@ -184,37 +195,49 @@ def ajoutSentiment():
         scores=model.polarity_scores(text)
         return scores.get('compound')
     
-    df["positive"]=""
+    
     for i in range(len(df)):
         positive = get_sentiment(df['Texte'][i])>0.05
-        df["positive"][i]=positive
+        df["Positive"][i]=positive
     
-
+    df['Positive']=df['Positive'].astype(str)
 
 #Ajout de la colonne l'entreprise qui va nous permettre d'ajouter l'entreprise
 #la plus cité, en concluant que c'est l'entreprise sur laquelle l'article est réalisé
     
-df['L\'entreprise']=''
 
 #Fonction donnant l'entreprise concerné par l'article
 
 def ajoutEntreprise():
     for i in range(len(df)):
         token = df['entreprise'][i]
+        token=token.split(",")
         fdist = FreqDist(token) 
         mot = fdist.most_common(1)
-        
         df['L\'entreprise'][i]=mot[0][0]
 
+    
+    df['L\'entreprise']=df['L\'entreprise'].astype(str)
 
+
+def ajoutLocalisation():
+    for i in range(len(df)):
+        token = df['localisation'][i]
+        token=token.split(",")
+        fdist = FreqDist(token) 
+        mot = fdist.most_common(1)
+        df['localisationPrecise'][i]=mot[0][0]
+
+    
+    df['localisationPrecise']=df['localisationPrecise'].astype(str)
 
 #Creation de la dataframe des media_francais et leurs influences
 
 media_francais=pd.read_excel('C:/Users/idel/Desktop/M2/Python/medias_francais.xlsx')
+media_francais['nom']=media_francais['nom'].astype(str)
 
 #recuperation du PDG de chaque entreprise liée à chaque article
 
-df['PDG']=''
 
 def recupererPDG():
     
@@ -272,11 +295,12 @@ def recupererPDG():
         if(existeDigit(df['PDG'][i])==True):
             df['PDG'][i]=''
 
-
+    
+    df['PDG']=df['PDG'].astype(str)
+    
 
 
 #ajout de la présence du PDG comme détenteur d'un media
-df['Detient_Media']=False
 
 def detientMedia():
     for i in range(len(media_francais)):
@@ -285,35 +309,21 @@ def detientMedia():
                 df['Detient_Media'][j]=True
 
 
+  
+    df['Detient_Media']=df['Detient_Media'].astype(str)
 
 
-#Appel de la fonction pour nettoyer nos articles
-nettoyageArticle()
+
 #Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
 ajout_TAG()
 #Appel de la fonction pour ajouter un sentiment positive ou pas    
 ajoutSentiment()
 #Ajout de l'entreprise concerné par l'article
 ajoutEntreprise()
+
+ajoutLocalisation()
+
 #Ajout du nom du PDG
 recupererPDG()
 #Ajout de la Collusion oui ou Non 
-detientMedia()        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+detientMedia()     

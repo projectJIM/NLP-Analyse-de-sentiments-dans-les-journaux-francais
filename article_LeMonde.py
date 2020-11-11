@@ -83,7 +83,7 @@ def recupererArticle(domaine):
     df['TexteOriginal'] = df['TexteOriginal'].astype(str)
         
     
-    globals()['df']=df
+    globals()['dc']=df
     
 #Scrapping et déplacement du scraping dans une dataframe d'un domaine présent dans journal Lemonde
 recupererArticle("entreprises")    
@@ -94,7 +94,7 @@ nlp = fr_core_news_sm.load()
 
 #Nettoyage des articles de la dataframe en supprimant les mots stop
 
-def nettoyageArticle():
+def nettoyageArticle(df):
     #nltk.download('stopwords')
     from nltk.corpus import stopwords
     MotArret = set(stopwords.words('french'))
@@ -137,8 +137,6 @@ def nettoyageArticle():
     
         df['Texte']=df['Texte'].astype(str)
 
-#Appel de la fonction pour nettoyer nos articles
-nettoyageArticle()
 
 
     
@@ -147,7 +145,7 @@ nettoyageArticle()
 #Recuperer catégorie (Named entity recognition)
 #Ajout des lables dans notre dataframe
 #On recupere les Article Prore (corrigé des mots stop et erreur /xa0)
-def ajout_TAG():
+def ajout_TAG(df):
     # Tokeniser la phrase
     
     for i in range(len(df)):
@@ -186,7 +184,7 @@ def ajout_TAG():
         df['entreprise']=df['entreprise'].astype(str)
         
 #Sentiment (positive ou negative)
-def ajoutSentiment():
+def ajoutSentiment(df):
     
      
     model = SentimentIntensityAnalyzer()
@@ -208,7 +206,7 @@ def ajoutSentiment():
 
 #Fonction donnant l'entreprise concerné par l'article
 
-def ajoutEntreprise():
+def ajoutEntreprise(df):
     for i in range(len(df)):
         token = df['entreprise'][i]
         token=token.split(",")
@@ -220,7 +218,7 @@ def ajoutEntreprise():
     df['L\'entreprise']=df['L\'entreprise'].astype(str)
 
 
-def ajoutLocalisation():
+def ajoutLocalisation(df):
     for i in range(len(df)):
         token = df['localisation'][i]
         token=token.split(",")
@@ -239,7 +237,7 @@ media_francais['nom']=media_francais['nom'].astype(str)
 #recuperation du PDG de chaque entreprise liée à chaque article
 
 
-def recupererPDG():
+def recupererPDG(df):
     
     for i in range(len(df)):
         try:
@@ -302,7 +300,7 @@ def recupererPDG():
 
 #ajout de la présence du PDG comme détenteur d'un media
 
-def detientMedia():
+def detientMedia(df):
     for i in range(len(media_francais)):
         for j in range(len(df)):
             if(media_francais['nom'][i]==df['PDG'][j]):
@@ -314,16 +312,19 @@ def detientMedia():
 
 
 
-#Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
-ajout_TAG()
-#Appel de la fonction pour ajouter un sentiment positive ou pas    
-ajoutSentiment()
-#Ajout de l'entreprise concerné par l'article
-ajoutEntreprise()
+#Appel de la fonction pour nettoyer nos articles
+nettoyageArticle(dc)
 
-ajoutLocalisation()
+#Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
+ajout_TAG(dc)
+#Appel de la fonction pour ajouter un sentiment positive ou pas    
+ajoutSentiment(dc)
+#Ajout de l'entreprise concerné par l'article
+ajoutEntreprise(dc)
+
+ajoutLocalisation(dc)
 
 #Ajout du nom du PDG
-recupererPDG()
+recupererPDG(dc)
 #Ajout de la Collusion oui ou Non 
-detientMedia()     
+detientMedia(dc)        

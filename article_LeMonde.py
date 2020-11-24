@@ -1,4 +1,5 @@
 
+
 import requests
 import bs4
 # Import BeautifulSoup (to parse what we download)
@@ -7,12 +8,15 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 import fr_core_news_sm
-
 import nltk
 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from nltk.tokenize import word_tokenize
 from nltk.probability import FreqDist 
+
+
+#nlpEng = en_core_web_sm.load()
+nlp = fr_core_news_sm.load()
 
 
 def recupererArticle(domaine):
@@ -84,14 +88,11 @@ def recupererArticle(domaine):
     df['TexteOriginal'] = df['TexteOriginal'].astype(str)
         
     
-    globals()['df']=df
+    globals()['dc']=df
     
 #Scrapping et déplacement du scraping dans une dataframe d'un domaine présent dans journal Lemonde
 recupererArticle("entreprises")    
  
-#nlpEng = en_core_web_sm.load()
-nlp = fr_core_news_sm.load()
-
 
 #Nettoyage des articles de la dataframe en supprimant les mots stop
 
@@ -134,10 +135,11 @@ def nettoyageArticle(df):
     for i in range(len(df)):
         df['Texte'][i]=tokenisation_Article_propre[i]
 
+    
+    df['Texte']=df['Texte'].astype(str)
+    df['TexteOriginal']=df['TexteOriginal'].astype(str)
 
     
-        df['Texte']=df['Texte'].astype(str)
-
 
 #Recuperer catégorie (Named entity recognition)
 #Ajout des lables dans notre dataframe
@@ -179,13 +181,7 @@ def ajout_TAG(df):
         df['entreprise']=df['entreprise'].astype(str)
         
         
-        for i in range(len(df)):
-            df['localisation'][i]=df['localisation'][i].replace('[','')
-            df['localisation'][i]=df['localisation'][i].replace(']','')
-            df['personne'][i]=df['personne'][i].replace('[','')
-            df['personne'][i]=df['personne'][i].replace(']','')
-            df['entreprise'][i]=df['entreprise'][i].replace('[','')
-            df['entreprise'][i]=df['entreprise'][i].replace(']','')
+        
                 
         
 #Sentiment (positive ou negative)
@@ -316,20 +312,42 @@ def detientMedia(df):
     df['Detient_Media']=df['Detient_Media'].astype(str)
 
 
+
+
 #Traitement Article Le Monde
     
 #Appel de la fonction pour nettoyer nos articles
-nettoyageArticle(df)
-#Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
-ajout_TAG(df)
-#Appel de la fonction pour ajouter un sentiment positive ou pas    
-ajoutSentiment(df)
-#Ajout de l'entreprise concerné par l'article
-ajoutEntreprise(df)
+nettoyageArticle(dc)
 
-ajoutLocalisation(df)
+for i in range(len(dc)):
+         dc['Texte'][i]=dc['Texte'][i].replace('\xa0','')
+         dc['TexteOriginal'][i]=dc['TexteOriginal'][i].replace('\xa0','')
+
+#Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
+ajout_TAG(dc)
+#Appel de la fonction pour ajouter un sentiment positive ou pas    
+ajoutSentiment(dc)
+#Ajout de l'entreprise concerné par l'article
+
+
+
+for i in range(len(dc)):
+            dc['localisation'][i]=dc['localisation'][i].replace('[','')
+            dc['localisation'][i]=dc['localisation'][i].replace(']','')
+            dc['personne'][i]=dc['personne'][i].replace('[','')
+            dc['personne'][i]=dc['personne'][i].replace(']','')
+            dc['entreprise'][i]=dc['entreprise'][i].replace('[','')
+            dc['entreprise'][i]=dc['entreprise'][i].replace(']','')
+
+ajoutEntreprise(dc)
+
+ajoutLocalisation(dc)
 
 #Ajout du nom du PDG
-recupererPDG(df)
+recupererPDG(dc)
 #Ajout de la Collusion oui ou Non 
-detientMedia(df)        
+detientMedia(dc)        
+
+
+dc.to_csv('C:/Users/idel/Desktop/M2/Python/le_Monde_traitement.csv',index = False, header=True)
+

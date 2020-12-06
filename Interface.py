@@ -6,9 +6,84 @@ df=pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_parisien2_traitement.csv")
 dc=pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_Monde_traitement.csv")
 dc_bis=pd.read_csv("C:/Users/idel/Desktop/M2/Python/Eco_lemonde_traitement.csv")
 
+for i in range(len(dc)):
+         dc['Texte'][i]=dc['Texte'][i].replace('\\xa0','')
+         dc['TexteOriginal'][i]=dc['TexteOriginal'][i].replace('\\xa0','')
+         
 
-#InterFAce Graphique
 
+
+
+def getEntreprise(var,dc):
+    nomPdg=[]
+    pos=0
+    neg=0
+    
+    nomPdg = dc[dc.iloc[:,9].str.contains(var)]['PDG'].values[0]
+    a=list(dc[dc.iloc[:,9].str.contains(var)]['Positive'])
+    for i in range(len(a)):
+        if(a[i]==True):
+            pos+=1
+        else:
+            neg+=1
+
+    return(["Article Le Monde PDG : ",nomPdg,"Nombre Article Positive : ",pos,"Nombre Article Negative : ",neg])
+
+def getEntrepriseParisien(var,dc):
+    nomPdg=[]
+    pos=0
+    neg=0
+    
+    nomPdg = dc[dc.iloc[:,7].str.contains(var)]['PDG'].values[0]
+    a=list(dc[dc.iloc[:,7].str.contains(var)]['Positive'])
+    for i in range(len(a)):
+        if(a[i]==True):
+            pos+=1
+        else:
+            neg+=1
+
+    return(["Article Le Parisien  PDG : ",nomPdg,"Nombre Article Positive : ",pos,"Nombre Article Negative : ",neg])
+
+
+
+#import re
+#for i in range(len(df)):
+#    df['L\'entreprise'][i]=re.sub(r'[^\w]', ' ', df['L\'entreprise'][i])
+    
+
+listeEntreprise =[]
+listeEntreprise=list(dc['L\'entreprise']) + list(dc_bis['L\'entreprise']) + list(df['L\'entreprise'])
+listeEntreprise = list(set(listeEntreprise))
+
+import nltk
+nltk.download('punkt')
+from nltk.tokenize import word_tokenize
+from nltk.tag import pos_tag
+def preprocess(sent):
+    sent = nltk.word_tokenize(sent)
+    sent = nltk.pos_tag(sent)
+    return sent
+
+
+
+b= " ".join(listeEntreprise)
+b=b.replace('[','')
+b=b.replace(']','')
+b=b.replace("' '",',')
+b=b.replace("'  '",',')
+b=b.replace('"',',')
+b=b.split(",")
+b=list(set(b))
+b=",".join(b)
+
+
+sent = preprocess(b)
+listeEntreprise2=[]
+for i in range(len(sent)):
+    if (sent[i][1] == 'NNP') or (sent[i][1] == 'NNPS'):
+      listeEntreprise2.append(sent[i][0])
+
+listeEntreprise2 = list(set(listeEntreprise2))
 
 #Article Le Parisien
 
@@ -220,11 +295,71 @@ def ArticleLemondeGeneral():
     tkinter.Button(top,text="Entrer ",command=articleAffichage).pack(padx=1,pady=0)
     tkinter.Button(top,text="Effacer ",command=efface).pack(padx=2,pady=0)
     
+def RechercheEntreprise():
+    top= tkinter.Toplevel(fenetre)
+    top.geometry("1200x700") #Taille de la fenetre
+    cadre1 = tkinter.Frame(top)      #Creation d'une fenêtre sur la gauche de l'ecran qui va permettre l'affichage des différentes licences au sein du domaine sélectionné
+    cadre1.pack(side=tkinter.TOP,fill=tkinter.BOTH,expand=True)
+    cadre2= tkinter.Frame(top)       #Creation d'une fenêtre sur la droite de l'ecran qui va permettre l'affichage des différentes universités proposant ses formations
+    cadre2.pack(side=tkinter.BOTTOM,fill=tkinter.BOTH,expand=True)
+       
+        
+    entry = tkinter.Entry(top,width=120)
+    result = entry.get()    #Result récupère le texte entré par l'utilisateur
+    
+    entry.pack(padx=1,pady=1)     #Affichage de la zone de recherche
+
+    
+    mylist = tkinter.Listbox(cadre1)      #Creation d'une listBox à gauche qui va contenir les formations
+    mylist2 = tkinter.Text(cadre2)
+    
+    
+    for entreprise in listeEntreprise2:
+        mylist.insert(tkinter.END,entreprise)
+    
+    
+    def articleAffichage():
+        result = str(entry.get())
+        resultat=[]
+        resultat2=[]
+        try:
+            resultat=getEntreprise(result,dc)            
+        except:
+            print('erreur')
+        try:
+            resultat2=getEntreprise(result,dc_bis)   
+        except:
+            print('erreur')
+        try:
+            resultat3=getEntrepriseParisien(result,df)
+        except:
+            print('erreur')
+
+            
+        mylist2.insert(tkinter.END,resultat)
+        mylist2.insert(tkinter.END,"\n")
+        mylist2.insert(tkinter.END,resultat2)
+        mylist2.insert(tkinter.END,"\n")
+        mylist2.insert(tkinter.END,resultat3)
+         
+        
+    def efface():
+        mylist2.delete(1.0,tkinter.END)
+        entry.delete(0, tkinter.END)
+           
+    
+    mylist.pack(side=tkinter.TOP,fill=tkinter.BOTH,expand=True)   #Affichage de la listbox
+    mylist2.pack(side=tkinter.BOTTOM,fill=tkinter.BOTH,expand=True)  #Affichage de la listbox
+    
+    tkinter.Button(top,text="Entrer ",command=articleAffichage).pack(padx=1,pady=0)
+    tkinter.Button(top,text="Effacer ",command=efface).pack(padx=2,pady=0)    
 
 #Button Interface d'acceuil
 tkinter.Button(fenetre,text="Article Le Monde Secteur Entreprise",font='Helvetica 13 bold',height = 4, width = 30,command=ArticleLemonde).pack(padx=1,pady=1)
 tkinter.Button(fenetre,text="Article Le Parisien ",font='Helvetica 13 bold',height = 4, width = 30,command=ArticleLeParisien).pack(padx=1,pady=10)
-tkinter.Button(fenetre,text="Article Le Monde (général) ",font='Helvetica 13 bold',height = 4, width = 30,command=ArticleLemondeGeneral).pack(padx=1,pady=10)
+tkinter.Button(fenetre,text="Article Le Monde Economie Française ",font='Helvetica 13 bold',height = 4, width = 30,command=ArticleLemondeGeneral).pack(padx=1,pady=10)
+tkinter.Button(fenetre,text="Recherche Entreprise ",font='Helvetica 13 bold',height = 4, width = 30,command=RechercheEntreprise).pack(padx=1,pady=10)
+tkinter.Button(fenetre,text="Quitter",font='Helvetica 13 bold',height = 4, width = 30,command=fenetre.destroy).pack(padx=1,pady=10)
 
 
 

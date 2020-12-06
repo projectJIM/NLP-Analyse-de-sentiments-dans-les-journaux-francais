@@ -14,8 +14,6 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from nltk.tokenize import word_tokenize
 from nltk.probability import FreqDist 
 
-
-#nlpEng = en_core_web_sm.load()
 nlp = fr_core_news_sm.load()
 
 
@@ -322,6 +320,8 @@ nettoyageArticle(dc)
 for i in range(len(dc)):
          dc['Texte'][i]=dc['Texte'][i].replace('\xa0','')
          dc['TexteOriginal'][i]=dc['TexteOriginal'][i].replace('\xa0','')
+         
+         
 
 #Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
 ajout_TAG(dc)

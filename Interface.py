@@ -2,10 +2,14 @@ import tkinter
 import pandas as pd
 
 
+#Importation des fichiers 
+
 df=pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_parisien2_traitement.csv")
 dc=pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_Monde_traitement.csv")
 dc_bis=pd.read_csv("C:/Users/idel/Desktop/M2/Python/Eco_lemonde_traitement.csv")
 
+
+#Nettoyage d'une erreur présente dans un fichier du à son passage en CSV
 for i in range(len(dc)):
          dc['Texte'][i]=dc['Texte'][i].replace('\\xa0','')
          dc['TexteOriginal'][i]=dc['TexteOriginal'][i].replace('\\xa0','')
@@ -13,6 +17,11 @@ for i in range(len(dc)):
 
 
 
+
+
+#Fonction permettant de récuperer les informations liés à une entreprise : 
+# PDG
+#Nombre articles positive / Negative
 
 def getEntreprise(var,dc):
     nomPdg=[]
@@ -29,6 +38,10 @@ def getEntreprise(var,dc):
 
     return(["Article Le Monde PDG : ",nomPdg,"Nombre Article Positive : ",pos,"Nombre Article Negative : ",neg])
 
+
+#Fonction permettant de récuperer les informations liés à une entreprise : 
+# PDG
+#Nombre articles positive / Negative
 def getEntrepriseParisien(var,dc):
     nomPdg=[]
     pos=0
@@ -46,14 +59,17 @@ def getEntrepriseParisien(var,dc):
 
 
 
-#import re
-#for i in range(len(df)):
-#    df['L\'entreprise'][i]=re.sub(r'[^\w]', ' ', df['L\'entreprise'][i])
-    
+
+#Regroupement des entreprises     
 
 listeEntreprise =[]
 listeEntreprise=list(dc['L\'entreprise']) + list(dc_bis['L\'entreprise']) + list(df['L\'entreprise'])
 listeEntreprise = list(set(listeEntreprise))
+
+
+#Appel d'une nouvelle méthode d'analyse des entrerprise appliqué  sur listeEntreprise
+#afin de réduire le nombre d'entreprise erronés
+#Les résultats issues de ce traitement seront stockés dans listeEntreprise2
 
 import nltk
 nltk.download('punkt')
@@ -76,7 +92,6 @@ b=b.split(",")
 b=list(set(b))
 b=",".join(b)
 
-
 sent = preprocess(b)
 listeEntreprise2=[]
 for i in range(len(sent)):
@@ -85,8 +100,8 @@ for i in range(len(sent)):
 
 listeEntreprise2 = list(set(listeEntreprise2))
 
-#Article Le Parisien
 
+#Liste des titres et texte Article Le Parisien nécessaire pour l'affichage de l'interface
 listTitreParisien=df['Titre']
 listArticleParisien=df['Texte']
 dictionnaireParisien = dict()
@@ -97,7 +112,7 @@ for x in listTitreParisien:
 
 
 
-#Article Le Monde secteur entreprise
+#Liste des titres et texte  Article Le Monde secteur entreprise
 listTitre=dc['Titre']
 listArticle=dc['TexteOriginal']
 dictionnaire = dict()
@@ -106,7 +121,7 @@ for x in listTitre:
      for y in listArticle:
         dictionnaire[x] = y
 
-#Article Le Monde Tous les secteurs
+#Liste des titres et texte  Article Le Monde Tous les secteurs
 
 listTitreMondeBis=dc_bis['Titre']
 listArticleMondeBis=dc_bis['TexteOriginal']
@@ -148,7 +163,7 @@ def ArticleLemonde():
     mylist2 = tkinter.Text(cadre2)
     
     
-    #Affichage de la clé du dictionnaire , qui correspond au nom des formations en lien avec le domaine choisi par l'utilisateur  
+    #Affichage de la clé du dictionnaire , qui correspond au titre des articles
     for cle in dictionnaire.keys():
         mylist.insert(tkinter.END,cle)
     
@@ -205,7 +220,7 @@ def ArticleLeParisien():
     mylist2 = tkinter.Text(cadre2)
     
     
-    #Affichage de la clé du dictionnaire , qui correspond au nom des formations en lien avec le domaine choisi par l'utilisateur  
+    #Affichage de la clé du dictionnaire , qui correspond au titres des articles
     for cle in dictionnaireParisien.keys():
         mylist.insert(tkinter.END,cle)
     
@@ -259,7 +274,7 @@ def ArticleLemondeGeneral():
     mylist2 = tkinter.Text(cadre2)
     
     
-    #Affichage de la clé du dictionnaire , qui correspond au nom des formations en lien avec le domaine choisi par l'utilisateur  
+    #Affichage de la clé du dictionnaire , qui correspond titre des articles 
     for cle in dictionnaireMondeBis.keys():
         mylist.insert(tkinter.END,cle)
     

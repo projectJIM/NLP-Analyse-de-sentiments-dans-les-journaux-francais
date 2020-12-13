@@ -9,14 +9,6 @@ dc=pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_Monde_traitement.csv")
 dc_bis=pd.read_csv("C:/Users/idel/Desktop/M2/Python/Eco_lemonde_traitement.csv")
 
 
-#Nettoyage d'une erreur présente dans un fichier du à son passage en CSV
-for i in range(len(dc)):
-         dc['Texte'][i]=dc['Texte'][i].replace('\\xa0','')
-         dc['TexteOriginal'][i]=dc['TexteOriginal'][i].replace('\\xa0','')
-         
-
-
-
 
 
 #Fonction permettant de récuperer les informations liés à une entreprise : 
@@ -103,36 +95,34 @@ listeEntreprise2 = list(set(listeEntreprise2))
 
 #Liste des titres et texte Article Le Parisien nécessaire pour l'affichage de l'interface
 listTitreParisien=df['Titre']
-listArticleParisien=df['Texte']
+listArticleParisien=df['Resume']
 dictionnaireParisien = dict()
  
-for x in listTitreParisien:
-     for y in listArticleParisien:
-        dictionnaireParisien[x] = y
+for i in range(len(listTitreParisien)):
+    dictionnaireParisien[listTitreParisien[i]]=listArticleParisien[i]
 
 
 
 #Liste des titres et texte  Article Le Monde secteur entreprise
 listTitre=dc['Titre']
-listArticle=dc['TexteOriginal']
+listArticle=dc['Resume']
 dictionnaire = dict()
- 
-for x in listTitre:
-     for y in listArticle:
-        dictionnaire[x] = y
+
+for i in range(len(listTitre)):
+    dictionnaire[listTitre[i]]=listArticle[i]
 
 #Liste des titres et texte  Article Le Monde Tous les secteurs
 
 listTitreMondeBis=dc_bis['Titre']
-listArticleMondeBis=dc_bis['TexteOriginal']
+listArticleMondeBis=dc_bis['Resume']
 dictionnaireMondeBis = dict()
  
-for x in listTitreMondeBis:
-     for y in listArticleMondeBis:
-        dictionnaireMondeBis[x] = y
+for i in range(len(listTitreMondeBis)):
+        dictionnaireMondeBis[listTitreMondeBis[i]] = listArticleMondeBis[i]
 
 
 
+dictionnaire["Téléviseurs : la 8K est-elle utile ?"]
 
 
 fenetre=tkinter.Tk()   

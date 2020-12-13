@@ -13,6 +13,9 @@ import nltk
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from nltk.tokenize import word_tokenize
 from nltk.probability import FreqDist 
+from gensim.summarization import summarize
+     
+
 
 nlp = fr_core_news_sm.load()
 
@@ -349,5 +352,40 @@ recupererPDG(dc)
 detientMedia(dc)        
 
 
+#Fonction permettant de réaliser des résumé en prenant seulement 20% du texte
+def summarizePassage(text,summaryRatio=0.2):
+     try:
+       summary = summarize(text,split=False,ratio=summaryRatio)
+     except:
+       print("WARNING: Gensim unable to reduce: ", text)
+       return [text]
+     return summary
+ 
+dc['Resume']=''    
+for i in range(len(dc)):    
+    dc['Resume'][i]=summarizePassage(dc["TexteOriginal"][i])
+
+dc["Resume"]=dc["Resume"].astype(str)
+
+#Suppression espace insécable
+
+for i in range(len(dc)):
+         dc['Texte'][i]=dc['Texte'][i].replace('\\xa0','')
+         dc['Resume'][i]=dc['Resume'][i].replace('\\xa0','')
+
+dc_bis['Resume']=''    
+for i in range(len(dc_bis)):    
+    dc_bis['Resume'][i]=summarizePassage(dc_bis["TexteOriginal"][i])
+
+
+#Suppression espace insécable
+
+dc_bis["Resume"]=dc_bis["Resume"].astype(str)
+for i in range(len(dc_bis)):
+         dc_bis['Texte'][i]=dc_bis['Texte'][i].replace('\\','')
+         dc_bis['Resume'][i]=dc_bis['Resume'][i].replace('\\','')
+
+
 dc.to_csv('C:/Users/idel/Desktop/M2/Python/le_Monde_traitement.csv',index = False, header=True)
 
+dc_bis.to_csv("C:/Users/idel/Desktop/M2/Python/Eco_lemonde_traitement.csv",index = False, header=True)

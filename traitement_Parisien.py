@@ -116,9 +116,9 @@ df.drop(['index'],axis=1,inplace=True)
 nettoyageArticle(df)
 #Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
 ajout_TAG(df)
-#Appel de la fonction pour ajouter un sentiment positive ou pas    
+#Appel de la fonction pour ajouter un sentiment positif ou pas    
 ajoutSentiment(df)
-#Ajout de l'entreprise concerné par l'article
+#Ajout de l'entreprise concernée par l'article
 
 
 ajoutEntreprise(df)
@@ -131,7 +131,7 @@ recupererPDG(df)
 detientMedia(df)        
 
 
-#Recupération de la base initial sur les articles Le Parisien afin de réaliser un résumé
+#Recupération de la base initiale sur les articles Le Parisien afin de réaliser un résumé
 #pour chaque article suite à un oubli de notre part de garder le texteOriginal dans la dataframe
 
 df=pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_parisien2_traitement.csv")
@@ -146,7 +146,7 @@ df_o.reset_index(drop=True,inplace=True)
 df_o['0']=df_o['0'].astype(str)
 
 from gensim.summarization import summarize
-#Fonction permettant de réaliser des résumé en prenant seulement 20% du texte
+#Fonction permettant de réaliser des résumés en prenant seulement 20% du texte
 def summarizePassage(text,summaryRatio=0.2):
      try:
        summary = summarize(text,split=False,ratio=summaryRatio)

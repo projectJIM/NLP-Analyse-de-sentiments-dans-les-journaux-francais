@@ -24,9 +24,9 @@ for i in range(len(dt)):
 
 #Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
 ajout_TAG(dt)
-#Appel de la fonction pour ajouter un sentiment positive ou pas    
+#Appel de la fonction pour ajouter un sentiment positif ou pas    
 ajoutSentiment(dt)
-#Ajout de l'entreprise concerné par l'article
+#Ajout de l'entreprise concernée par l'article
 
 
 

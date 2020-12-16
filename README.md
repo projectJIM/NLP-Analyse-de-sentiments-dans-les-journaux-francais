@@ -21,7 +21,6 @@ Dans le cas du journal “Le Parisien”, l’actionnaire majoritaire est Bernar
 Ci-dessous, les deux liens nous dressent la situation actuelle pour tous les organes de presse français afin de savoir quelles entreprises ou personnes sont actionnaires (majoritaires / minoritaires) dans un organe de presse. 
 
 Lien de l’article : https://www.monde-diplomatique.fr/cartes/PPA
-Lien du Git : https://github.com/mdiplo/Medias_francais
 
 On a aussi rajouté dans nos dataframes finales la variable “résumé” qui permet d’afficher avec seulement 20% du texte traité les grandes lignes de l’article.
 

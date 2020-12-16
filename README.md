@@ -37,8 +37,8 @@ C’est aussi une des limites de cette méthode, les expressions ironiques ou au
 L’avantage principal de cet algorithme est sa simplicité et sa facile interprétation: un article est positif s' il contient plus de mots d’articles entraînés positifs que négatifs.
 
 Nous allons tester quatre variations d’inputs possibles de cet algorithme et comparer leurs performances:
-les articles non-modifiés ;
-les articles dont les “stopwords”, ou mots vides, sans importances pour le sentiment, ont été enlevés ;
-les articles où la ponctuation a été enlevé;
-les articles où uniquement la source du mot a été préservée.
+ - les articles non-modifiés ;
+ - les articles dont les “stopwords”, ou mots vides, sans importances pour le sentiment, ont été enlevés ;
+ - les articles où la ponctuation a été enlevé;
+ - les articles où uniquement la source du mot a été préservée.
 

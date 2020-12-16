@@ -10,6 +10,8 @@ L’objectif de ce projet est d’analyser de nombreux articles de presse franç
 
 En amont, nous avons sélectionné deux sites de presse française, « Le Monde » ainsi que « Le Parisien ». Pour le premier, ont été sélectionnées seulement quelques catégories spécifiques afin de bien répondre à notre problématique, la section réservée aux articles sur les entreprises, et celle réservée à l’économie française et internationale. 
 
+Le scraping des articles à l’aide de beautifulsoup nous a permis de récupérer l’ensemble de l’article, comprenant également la partie réservée aux abonnées.
+
 Pour le site du Parisien, nous avons créé une grande base de données depuis les articles de janvier 2020 jusqu’à ceux d’aujourd’hui sur toutes les catégories possibles.
 Ainsi la base de données du site “Le Parisien” pour le projet de traitement de texte est constituée de plus de 13000 articles avec toutes les catégories. On retrouvera pour chaque article scrappé le texte complet, son lien vers le site de presse, sa catégorie, sa date de parution sur le site et son titre. 
 

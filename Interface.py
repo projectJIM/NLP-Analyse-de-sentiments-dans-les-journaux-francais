@@ -8,7 +8,9 @@ df=pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_parisien2_traitement.csv")
 dc=pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_Monde_traitement.csv")
 dc_bis=pd.read_csv("C:/Users/idel/Desktop/M2/Python/Eco_lemonde_traitement.csv")
 
-
+#Importation des Images
+parisien = tkinter.PhotoImage(file="C:\\Users\\idel\\Desktop\\M2\\Python\\Le_Parisien_logo.png")
+leMonde = tkinter.PhotoImage(file="C:\\Users\\idel\\Desktop\\M2\\Python\\Logo-le-monde.png")
 
 
 #Fonction permettant de récuperer les informations liés à une entreprise : 
@@ -128,9 +130,7 @@ dictionnaire["Téléviseurs : la 8K est-elle utile ?"]
 fenetre=tkinter.Tk()   
 
 
-#Importation des Images
-parisien = tkinter.PhotoImage(file="C:\\Users\\idel\\Desktop\\M2\\Python\\Le_Parisien_logo.png")
-leMonde = tkinter.PhotoImage(file="C:\\Users\\idel\\Desktop\\M2\\Python\\Logo-le-monde.png")
+
 
 
 def ArticleLemonde():  

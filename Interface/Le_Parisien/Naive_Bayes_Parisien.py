@@ -2,9 +2,9 @@ import pandas as pd
 import nltk
 #nltk.download()
 
-##################################################################################
-###################### IMPORTATION DE DONNEES  ###################################
-##################################################################################
+#####################################################################################
+######################### IMPORTATION DE DONNEES  ###################################
+#####################################################################################
 df=pd.read_csv('C:/Users/jovan/OneDrive/Radna površina/Paris 1/NLP_2/data/le_parisien/le_parisien_final.csv')
 
 
@@ -41,6 +41,9 @@ input_no_puk=train('Label_no_puk')
 
 
 ############################# FONCTION CREATRICE DU BAYESIEN #########################
+
+# Source d'inspiration: https://www.datatechnotes.com/2019/05/sentiment-classification-with-nltk.html
+
 import random
 #from sklearn.model_selection import KFold
 #0.9*len(input_no_puk)
@@ -111,6 +114,7 @@ std_no_puk=sum((i - moy_no_puk) ** 2 for i in acc_no_puk) / len(acc_no_puk)
 print('La moyenne est:',moy_no_puk,"et l'ecart-type est:",std_no_puk)
 
 ########################### Matrice de confusion #######################################
+
 from collections import defaultdict
 refsets = defaultdict(set)
 testsets = defaultdict(set)
@@ -132,19 +136,24 @@ print(nltk.ConfusionMatrix(labels, tests))
 ###########################################################################################
 
 ####################### Frequence d'un mot dans un article ##############################
+
 from nltk.probability import FreqDist
-
-mots=list(df['tokens'])
-l=mots[0].strip('][').split(', ')
-
-fdist = FreqDist(l)
-print(fdist)
-fdist.most_common(5)
-
-# Frequency Distribution Plot
 import matplotlib.pyplot as plt
-fdist.plot(30,cumulative=False)
-plt.show()
+
+def Freq_article(i,article):
+    """ Compte la frequence d'apparition d'un mot dans un article """
+    mots=list(df[article])
+    l=mots[i].strip('][').split(', ')    
+    fdist = FreqDist(l)
+#    print(fdist)
+    fdist.most_common(5)    
+    fdist.plot(20,cumulative=False)
+    plt.show()
+tokens_no_sw')
+
+# Les graphiques publiés sur le git
+Freq_article(12892,'tokens')
+Freq_article(12892,'tokens_no_sw')
 
 
 ######################### AVIS DE LA PHRASE OU DU MOT ###################################

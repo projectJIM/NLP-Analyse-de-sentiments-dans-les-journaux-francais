@@ -115,7 +115,7 @@ for i in range(0,len(df)):
 ########################## COUNT WORDS ########################################
 
 def count_words(i,text):
-    " Compte l'occurence d'un mot dans l'article i"
+    " Compte l'occurence d'un mot dans l'article i "
     freq = nltk.FreqDist(df[text][i])
     for key,val in freq.items():
         print(str(key) + ':' + str(val))

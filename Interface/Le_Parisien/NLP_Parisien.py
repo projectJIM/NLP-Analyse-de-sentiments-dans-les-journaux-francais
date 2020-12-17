@@ -4,7 +4,7 @@ import nltk
 
 
 ##################################################################################
-###############  LE PARISIEN: LINKED COMPANIES AND INDIVIDUALS  ##################
+###3####  LE PARISIEN: ENTREPRISES LIEES ET ENTREPRISES CONCURRENTES  #############
 ##################################################################################
 
 org_lvmh=['LVMH', 'Louis Vuitton','Ao Yun','Ardbeg','Belvedere','Bodega Numanthia',
@@ -25,40 +25,36 @@ org_lvmh=['LVMH', 'Louis Vuitton','Ao Yun','Ardbeg','Belvedere','Bodega Numanthi
 'Radio Classique','Investir - Le Journal des Finances','la Samaritaine','Bvlgari','Celine']
 
 
-org_conc=['Chanel','Hermes','Gucci','Burberry','Cartier','Prada','Rémy Martin','Pernod Ricard',
-          'Martell','Chivas Regal','Absolut Vodka','Ballantines','Courvoisier']
+org_concurrentes=['Chanel','Hermes','Gucci','Burberry','Cartier','Prada','Rémy Martin',
+                  'Pernod Ricard','Martell','Chivas Regal','Absolut Vodka','Ballantines',
+                  'Courvoisier']
 
 
 ##################################################################################
-#########  1. Importing the corpora with news articles ###########################
+########################  IMPORTATION DES ARTICLES ###############################
 ##################################################################################
 
 df=pd.read_csv('C:/Users/jovan/OneDrive/Radna površina/Paris 1/NLP_2/data/le_parisien/le_parisien_final.csv')
 
-# 13 194 articles du parisien
+# 13 194 articles du Parisien
 
 ##################################################################################
-######################  2. Text preprocessing  ###################################
+########################  TRAITEMENT DE TEXTE  ###################################
 ##################################################################################
 
-#sent_tokenize() : Sentence tokenization
+# Source d'inspiration: https://machinelearningmastery.com/clean-text-machine-learning-python/
 
-################ Removing punctuation #######################
+################ Enlever la ponctuation #######################
 def remove_punctuation(text):
-    '''a function for removing punctuation'''
+    """Fonction qui prend en input le texte et enlève la ponctuation"""
     import string
-    # replacing the punctuations with no space, 
-    # which in effect deletes the punctuation marks 
     translator = str.maketrans('', '', string.punctuation)
-    # return the text stripped of punctuation marks
     return text.translate(translator)
 
 df['texte_nopuk'] = df['texte'].apply(remove_punctuation)
 
-################## Lowering cases in all articles ##########################
-#df['texte']=pd.Series(df['texte']).str.lower()
 
-#################### Tokenization and remove punctuation: ##################
+#################### Tokenization et enlever la ponctuation: ##################
 from nltk.tokenize import RegexpTokenizer
 tokenizer = RegexpTokenizer(r'\w+')
 
@@ -68,17 +64,15 @@ for i in range(0,len(df)):
 
 #print(df['tokens'][0])
 
-###################### Remove stopwords (a, at, the..) #####################
+###################### Enlever les mots vides (au, ce, de...) #####################
 from nltk.corpus import stopwords
 sw = stopwords.words('french')
 
+# On rajoute a qui, surprise, n'y était pas.
 sw.append('a')
-
-#Option 2:        
+       
 def stopwords(text):
-    # removing the stop words and lowercasing the selected words
     text = [word for word in text if word.lower() not in sw]
-    # joining the list of words with space separator
     return " ".join(text)
 
 df['no_sw'] = df['tokens'].apply(stopwords)    
@@ -93,13 +87,13 @@ for i in range(0,len(df)):
 
 #df['tokens_no_sw'][0]
 
-########################## SAME ROOTS WORDS ###################################
-# Stemming together words of same roots:
+########################## RACINE DU MOT ###################################
+# On utilise le SnowballStemmer français de NLTK
 from nltk.stem.snowball import SnowballStemmer
 stemmer = SnowballStemmer("french")
 
 def stemming(text):    
-    '''a function which stems each word in the given text'''
+    """ Le stemming est la 'coupure' de la partie insignifiante du mot """
     text = [stemmer.stem(word) for word in text.split()]
     return " ".join(text) 
 
@@ -107,7 +101,7 @@ df['same_roots'] = df['no_sw'].apply(stemming)
 
 #df['same_roots'][0]
 
-# Tokenization of same_roots text:
+# Tokenization:
 df['same_roots_tk']=df['same_roots']
 for i in range(0,len(df)):
     df['same_roots_tk'][i] = [t for t in df['same_roots'][i].split()]
@@ -115,7 +109,7 @@ for i in range(0,len(df)):
 #df['same_roots_tk'][0]
 
 ##################################################################################
-########################## 3. Text analysis  #####################################
+########################## ANALYSE DES TEXTES  ###################################
 ##################################################################################
 
 ########################## COUNT WORDS ########################################
@@ -132,6 +126,9 @@ count_words(0,text='same_roots_tk')
 
 
 ########################## IDENTIFICATION #####################################
+
+# Nous allons chercher à identifier les entreprises proches du Parisien
+# ATTENTION: Savoir que cette partie peut mettre beaucoup de temps à s'exécuter
 
 def return_POS(sentence):
     # Tokeniser la phrase
@@ -150,12 +147,14 @@ def ident_wordtype(text):
 token_type=ident_wordtype('tokens')
 ident_wordtype('no_puk_sw_tk')
 
-import fr_core_news_sm
+# Cette partie au-dessus n'a finalement pas été utile car on a trouvé le package fr_core_news_sm
 
+import fr_core_news_sm
 #from pprint import pprint
 nlp = fr_core_news_sm.load()
 
-#Possible types:
+# De la documentation de spaCy:
+# Possible types identifiés:
 #PERSON	People, including fictional.
 #NORP	Nationalities or religious or political groups.
 #FAC	Buildings, airports, highways, bridges, etc.
@@ -174,10 +173,11 @@ nlp = fr_core_news_sm.load()
 #QUANTITY	Measurements, as of weight or distance.
 #ORDINAL	“first”, “second”, etc.
 #CARDINAL	Numerals that do not fall under another type.
+
 df['org']=df['titre']
 
 def ident_nom_propre(i,text):
-    """Identifie les chiffres,dates et noms propres. Les organisations seront identifier a l'article"""
+    """Identifie les chiffres,dates et noms propres. Les organisations seront associés à l'article"""
     doc = nlp(df[text][i])
     #pprint([(X.text, X.label_) for X in doc.ents])
     ident=[(X.text, X.label_) for X in doc.ents]
@@ -232,8 +232,6 @@ pos=[1,2,4,7,9,10,12,16,23,24,25,26,27,28,29,32,34,35,36,37,38,41,43,45,48,51,54
 153,165,168,169,170,222,243,480,544,554,640,649,651,1749,
 2217,2465,4420,4429,4440,4493,4633,4767,4980,4983,5107,6733,6797,6806,6945,6949]
 
-
-
 neg=[0,3,5,6,8,11,13,14,15,17,18,19,20,21,22,30,31,33,39,40,42,44,46,47,49,50,52,53,56,58,59,
      60,61,62,69,70,71,72,73,75,77,79,81,82,83,86,87,88,89,90,92,93,94,95,98,99,
      100,101,102,103,105,107,108,109,115,116,121,125,126,127,128,135,137,138,139,140,141,148,
@@ -243,16 +241,7 @@ neg=[0,3,5,6,8,11,13,14,15,17,18,19,20,21,22,30,31,33,39,40,42,44,46,47,49,50,52
      2014,2055,2210,2359,2636,3650,3660,4210,4216,4485,4549,4660
      ,6006,6665,6671,6721,6792,6888,6898,9840]
 
-for i in range(126,140):
-    if i not in pos:
-        if i not in neg:
-            print(i)
-    if df['categorie'][i] in ['societe','international','politique''culture-loisirs', 'economie','environnement','high-tech', 'sciences', 'immobilier']:
-            print(i,df['lien'][i])
-        
-
 #df['categorie'].unique()
-df['texte'][172]
 
 df_pos=df.loc[pos]
 df_neg=df.loc[neg]
@@ -266,20 +255,23 @@ df_neg.to_csv(path3, index = False, header=True)
 all_av=pos+neg
 df_avis=df.loc[all_av]
 df_avis.reset_index(drop=True,inplace=True)
+
 ######################################################################################
-######################## PREPROCESSING BAYES NLTK ####################################
+########################## TRAITEMENT BAYES NLTK ####################################
 ######################################################################################
-# Dure longtemps et est lancer une seule fois
+
+# Source d'inspiration: https://www.datatechnotes.com/2019/05/sentiment-classification-with-nltk.html
+
+# Dans cette partie nous avons traité nos articles pour les formatter de manière convenable
+# au Naive Bayes du NLTK
+
+#ATTENTION: Dure longtemps et à lancer une seule fois
+
 from nltk.tokenize import word_tokenize
 
 def bayes_prep(text):
     data=([(posi[text], 'positive') for index, posi in df_pos.iterrows()]+
            [(nega[text], 'negative') for index, nega in df_neg.iterrows()])
-    # df.iterrows() : Iterate over df rows. Returns index of the row in DataFrame (tuple when multiple idx).
-    # Then returns the row data as Pandas Series. row is like the df[i] iterated i times.
-    
-    # Create a set of tokenized words. Set items are unordered, no duplicates and immutable 
-    # set elements. Any type or number of elements (except lists and dictionnaries).
     tokens=list(word.lower() for words in data for word in word_tokenize(words[0]))
     tokens2 = [item.replace("'","") for item in tokens]
     tokens3 = [x for x in tokens2 if x]  
@@ -314,7 +306,6 @@ df_avis['Avis'] = df_texte['Avis']
 df_avis['Label_no_sw'] = df_no_sw['Label_no_sw']
 df_avis['Label_same_roots'] = df_same_roots['Label_same_roots']
 df_avis['Label_no_puk'] = df_texte_nopuk['Label_no_puk']
-
 
 path1=r"C:\Users\jovan\OneDrive\Radna površina\Paris 1\NLP_2\data\le_parisien\le_parisien_avis.csv"
 df_avis.to_csv(path1, index=False, header=True)

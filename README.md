@@ -1,8 +1,12 @@
-# NLP
+# Analyse de sentiments dans les journaux français
 
-## Présentation et Description du Projet
+## Présentation et Description du Projet NLP
 
-Problématique : À l'aide d’un langage de programmation, comment peut-on savoir si un article de presse est positif sur le sujet traité ? 
+![Le Parisien](https://github.com/projectJIM/NLP/blob/main/Interface/Le_Parisien/Le_Parisien_logo.png?raw=true) 
+
+![Monde](https://github.com/projectJIM/NLP/blob/main/Interface/Le_Monde/Logo-le-monde.png?raw=true) 
+
+Problématique de départ : À l'aide d’un langage de programmation, comment peut-on savoir si un article de presse est positif ou négatif sur le sujet traité ? 
 
 # Présentation du projet :
 

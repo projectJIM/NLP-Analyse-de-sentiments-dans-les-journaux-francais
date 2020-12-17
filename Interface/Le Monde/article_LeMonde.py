@@ -119,7 +119,7 @@ def nettoyageArticle(df):
     #Suppression '\xa0'
     erreur = '\xa0'
     
-    #suppression des erreur
+    #suppression des erreurs
     for i in range(len(tokenisation_Article)):
     
         tokenisation_Article[i] = list(filter(lambda a: a != erreur, tokenisation_Article[i]))
@@ -144,7 +144,7 @@ def nettoyageArticle(df):
 
 #Recuperer catégorie (Named entity recognition)
 #Ajout des lables dans notre dataframe
-#On recupere les Article Prore (corrigé des mots stop et erreur /xa0)
+#On recupere les Articles Prores (corrigés des mots stop et erreur /xa0)
 def ajout_TAG(df):
     # Tokeniser la phrase
     
@@ -163,7 +163,7 @@ def ajout_TAG(df):
                 localisation.append(X.text)            
             elif X.label_=='PER':
                 personne.append(X.text)
-        #Recupere les entreprises present dans le titre 
+        #Recupere les entreprises presentent dans le titre 
         #(si cela n'a pas été le cas dans le texte)        
         
         for Y in titre.ents:
@@ -185,7 +185,7 @@ def ajout_TAG(df):
         
                 
         
-#Sentiment (positive ou negative)
+#Sentiment (positif ou negatif)
 def ajoutSentiment(df):
     
      
@@ -203,10 +203,10 @@ def ajoutSentiment(df):
     df['Positive']=df['Positive'].astype(str)
 
 #Ajout de la colonne l'entreprise qui va nous permettre d'ajouter l'entreprise
-#la plus cité, en concluant que c'est l'entreprise sur laquelle l'article est réalisé
+#la plus citée, en concluant que c'est l'entreprise sur laquelle l'article est réalisé
     
 
-#Fonction donnant l'entreprise concerné par l'article
+#Fonction donnant l'entreprise concernée par l'article
 
 def ajoutEntreprise(df):
     for i in range(len(df)):
@@ -277,12 +277,12 @@ def recupererPDG(df):
     def existeDigit(inputString):
         return bool(re.search(r'\d', inputString))
     
-    #Suppression des PDG associé à NAN
+    #Suppression des PDG associés à NAN
     for i in range(len(df)):
         if(df['L\'entreprise'][i]=='nan'):
             df['PDG'][i]=''
     
-    #Recupere toute les phrase afin de les remplacer par le personnage cité dans la phrase
+    #Récupérer toute les phrase afin de les remplacer par le personnage cité dans la phrase
     for i in range(len(df)):
         if(len(df['PDG'][i])>30):
             doc = nlp(df['PDG'][i])
@@ -290,7 +290,7 @@ def recupererPDG(df):
                 if (X.label_=='PER' ):
                     df['PDG'][i]=X.text
     
-    #Suppression des textes tronquer présentant des chiffres 
+    #Suppression des textes tronqués présentant des chiffres 
     for i in range(len(df)):
         if(existeDigit(df['PDG'][i])==True):
             df['PDG'][i]=''
@@ -328,9 +328,9 @@ for i in range(len(dc)):
 
 #Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
 ajout_TAG(dc)
-#Appel de la fonction pour ajouter un sentiment positive ou pas    
+#Appel de la fonction pour ajouter un sentiment positif ou pas    
 ajoutSentiment(dc)
-#Ajout de l'entreprise concerné par l'article
+#Ajout de l'entreprise concernée par l'article
 
 
 
@@ -352,7 +352,7 @@ recupererPDG(dc)
 detientMedia(dc)        
 
 
-#Fonction permettant de réaliser des résumé en prenant seulement 20% du texte
+#Fonction permettant de réaliser des résumés en prenant seulement 20% du texte
 def summarizePassage(text,summaryRatio=0.2):
      try:
        summary = summarize(text,split=False,ratio=summaryRatio)

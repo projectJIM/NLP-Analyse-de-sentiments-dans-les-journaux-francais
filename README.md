@@ -1,8 +1,12 @@
-# NLP
+# Analyse de sentiments dans les journaux français
 
-## Présentation et Description du Projet
+## Présentation et Description du Projet NLP
 
-Problématique : À l'aide d’un langage de programmation, comment peut-on savoir si un article de presse est positif sur le sujet traité ? 
+![Le Parisien](https://github.com/projectJIM/NLP/blob/main/Interface/Le_Parisien/Le_Parisien_logo.png?raw=true) 
+
+![Monde](https://github.com/projectJIM/NLP/blob/main/Interface/Le_Monde/Logo-le-monde.png?raw=true) 
+
+Problématique de départ : À l'aide d’un langage de programmation, comment peut-on savoir si un article de presse est positif ou négatif sur le sujet traité ? 
 
 # Présentation du projet :
 
@@ -20,7 +24,7 @@ Par exemple, dans un premier temps, le projet devait se centrer exclusivement su
 Pour aller plus loin dans le projet, nous avons aussi décidé d’extraire, si cela est possible, le PDG de l’entreprise décrite et sa localisation géographique. De plus, nous voulons aussi savoir si l’entreprise a un potentiel lien économique (ou financier) avec le journal, c'est-à-dire que l’entreprise à des parts de marché dans le journal. 
 Dans le cas du journal “Le Parisien”, l’actionnaire majoritaire est Bernard Arnault, et son entreprise LVMH détient à 100% le groupe de presse “Le Parisien”. Pour “Le Monde” on dénombre trois actionnaires majoritaires, Xavier Niel le fondateur d'Iliad, maison mère de Free, Matthieu Pigasse et le tchèque Daniel Kretinsky. (Voir **traitement_Parisien.py**) (Voir **traitement_article_Lemonde_Generale.py**)
 
-Ci-dessous, les deux liens nous dressent la situation actuelle pour tous les organes de presse français afin de savoir quelles entreprises ou personnes sont actionnaires (majoritaires / minoritaires) dans un organe de presse. 
+Ci-dessous, le lien nous dresse la situation actuelle pour tous les organes de presse français afin de savoir quelles entreprises ou personnes sont actionnaires (majoritaires / minoritaires) dans un organe de presse. Nous ferons à la fin une analyse des articles du Parisien sur le groupe LVMH.
 
 Lien de l’article : https://www.monde-diplomatique.fr/cartes/PPA
 

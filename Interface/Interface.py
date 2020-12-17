@@ -15,9 +15,9 @@ leMonde = tkinter.PhotoImage(file="C:\\Users\\idel\\Desktop\\M2\\Python\\Logo-le
 
 
 
-#Fonction permettant de récuperer les informations liés à une entreprise : 
+#Fonction permettant de récupérer les informations liées à une entreprise : 
 # PDG
-#Nombre articles positive / Negative
+#Nombre articles positifs / Negatifs
 
 def getEntreprise(var,dc):
     nomPdg=[]
@@ -35,9 +35,9 @@ def getEntreprise(var,dc):
     return(["Article Le Monde PDG : ",nomPdg,"Nombre Article Positive : ",pos,"Nombre Article Negative : ",neg])
 
 
-#Fonction permettant de récuperer les informations liés à une entreprise : 
+#Fonction permettant de récupérer les informations liées à une entreprise : 
 # PDG
-#Nombre articles positive / Negative
+#Nombre articles positifs / Negatifs
 def getEntrepriseParisien(var,dc):
     nomPdg=[]
     pos=0
@@ -63,9 +63,9 @@ listeEntreprise=list(dc['L\'entreprise']) + list(dc_bis['L\'entreprise']) + list
 listeEntreprise = list(set(listeEntreprise))
 
 
-#Appel d'une nouvelle méthode d'analyse des entrerprise appliqué  sur listeEntreprise
-#afin de réduire le nombre d'entreprise erronés
-#Les résultats issues de ce traitement seront stockés dans listeEntreprise2
+#Appel d'une nouvelle méthode d'analyse des entreprises appliquée  sur listeEntreprise
+#afin de réduire le nombre d'entreprises erronées
+#Les résultats issus de ce traitement seront stockés dans listeEntreprise2
 
 import nltk
 nltk.download('punkt')
@@ -97,7 +97,7 @@ for i in range(len(sent)):
 listeEntreprise2 = list(set(listeEntreprise2))
 
 
-#Liste des titres et texte Article Le Parisien nécessaire pour l'affichage de l'interface
+#Liste des titres et textes Article Le Parisien nécessaire pour l'affichage de l'interface
 listTitreParisien=df['Titre']
 listArticleParisien=df['Resume']
 dictionnaireParisien = dict()
@@ -107,7 +107,7 @@ for i in range(len(listTitreParisien)):
 
 
 
-#Liste des titres et texte  Article Le Monde secteur entreprise
+#Liste des titres et textes  Article Le Monde secteur entreprise
 listTitre=dc['Titre']
 listArticle=dc['Resume']
 dictionnaire = dict()
@@ -115,7 +115,7 @@ dictionnaire = dict()
 for i in range(len(listTitre)):
     dictionnaire[listTitre[i]]=listArticle[i]
 
-#Liste des titres et texte  Article Le Monde Tous les secteurs
+#Liste des titres et textes  Article Le Monde Tous les secteurs
 
 listTitreMondeBis=dc_bis['Titre']
 listArticleMondeBis=dc_bis['Resume']
@@ -153,7 +153,7 @@ def ArticleLemonde():
     mylist2 = tkinter.Text(cadre2)
     
     
-    #Affichage de la clé du dictionnaire , qui correspond au titre des articles
+    #Affichage de la clé du dictionnaire , qui correspond aux titres des articles
     for cle in dictionnaire.keys():
         mylist.insert(tkinter.END,cle)
     
@@ -210,7 +210,7 @@ def ArticleLeParisien():
     mylist2 = tkinter.Text(cadre2)
     
     
-    #Affichage de la clé du dictionnaire , qui correspond au titres des articles
+    #Affichage de la clé du dictionnaire , qui correspond aux titres des articles
     for cle in dictionnaireParisien.keys():
         mylist.insert(tkinter.END,cle)
     
@@ -264,7 +264,7 @@ def ArticleLemondeGeneral():
     mylist2 = tkinter.Text(cadre2)
     
     
-    #Affichage de la clé du dictionnaire , qui correspond titre des articles 
+    #Affichage de la clé du dictionnaire , qui correspond aux titres des articles 
     for cle in dictionnaireMondeBis.keys():
         mylist.insert(tkinter.END,cle)
     
@@ -371,7 +371,7 @@ tkinter.Button(fenetre,text="Quitter",font='Helvetica 13 bold',height = 4, width
 #Canvas permettant l'affichage de toutes les images
 c = tkinter.Canvas(fenetre,width=200,height=200,bg ='white')
 
-#Affichage de toutes les images sur l'ecran de démarrage de l'application
+#Affichage de toutes les images sur l'écran de démarrage de l'application
 c.create_image(300, 100, image=parisien)
 c.create_image(1200, 100, image=leMonde)
 c.pack(side=tkinter.LEFT,expand=True,fill=tkinter.X)
@@ -387,7 +387,7 @@ m.add_cascade (label = "Quitter", menu = sm1)
    
 
 #Lien entre les fenetres et les onglets
-#Chaque sous menu present dans chaque onglets renvoi vers sa fenêtre respective comme défini préalablement
+#Chaque sous-menus present dans chaque onglets renvoient vers sa fenêtre respective comme défini préalablement
 
 sm1.add_command(label="Quitter", command=fenetre.destroy)
 

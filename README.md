@@ -35,24 +35,41 @@ On a aussi rajouté dans nos dataframes finales la variable “résumé” qui p
 Nous avons utilisé le package NLTK pour faire plusieurs variantes de textes qui seront utilisé plus tard dans l'analyse: sans les mots vides, la ponctuation ou tout en cherchant la source du mot. 
 De plus, dans cette partie nous avons identifier si un article contenait ou pas mention d'une entreprise proche du journal, dans ce cas Le Parisien, donc une entreprise faisant partie du groupe LVMH. Ceci a été fait à l'aide du package spaCy. (Voir **NLP_Parisien.py**)
 
+Voici deux graphiques qui illustrent l'importance de cette étape. Le premier représente la fréquence d'apparition de mots dans un article du Parisien non traité, et le deuxième montre la fréquence dans le cas ou les mots vides ont été enlevé.  
+\mettre image avec le decompte du mots des differents types de textes
+
+La différence est significative. Dans le premier cas, les mots qui auront un poids plus important dans de nombreuses analyses (par exemple dans l'estimateur Bayesien - voir la partie suivante) sont des mots relativement insignifiant. Dans le deuxième cas, ces mots vides sont mis à l'écart et la thématique de l'article peut être déduit en regardant uniquement ce graphique de fréquence. Or, les stopwords (mots vides) ont une signification, voir par exemple le test fait à la fin de la partie suivante.
+
 ## L'estimateur de Bayes 
 
 Le Naive Bayes Estimator, ou estimateur naïf de Bayes, permet une classification binaire des articles. Si on considère deux classes 0 et 1, il est basé sur le calcul de la probabilité d’appartenir à la classe 1 (article positif) ou 0 (article négatif). 
-Dans notre cas, le décompte des mots permet de calculer cette probabilité. Chaque mot représente une variable explicative qui est soit présente, soit absente de l’article. 
+Dans notre cas, le décompte des mots permet de calculer cette probabilité. Chaque mot représente une variable explicative qui est soit présente, soit absente de l’article et sur lequel on a une opinion préalable positive ou négative. 
 
-Supposons que pour une base de données d'entraînement, les classes sont indiquées. Nous allons chercher alors à combien de fois un mot (ponctuation incluse) apparaît dans les articles positifs et combien de fois il apparait aussi dans les articles négatifs. Ainsi, nous pouvons calculer la probabilité qu’un nouvel article soit positif ou négatif en fonction des mots apparaissant dans cet article, et en fonction de la fréquence d'apparition de ces mots dans les articles de notre base d'entraînement. 
+Comment cette opinion préalable au test est-elle construite? Supposons que pour une base de données d'entraînement, les classes sont indiquées. Nous allons chercher alors combien de fois un mot (ponctuation incluse) apparaît dans les articles positifs et combien de fois il apparait aussi dans les articles négatifs. Ainsi, nous pouvons calculer la probabilité qu’un nouvel article soit positif ou négatif en fonction des mots apparaissant dans cet article, et en fonction de leur fréquence d'apparition dans les articles pré-classifiés de notre base d'entraînement. 
 
-Le package nltk.NaiveBayesClassifier permet de faire exactement ce calcul. Les mots inconnus par la base d'entraînement apparaissant dans les nouveaux articles sont ignorés dans nos calculs. Ceci montre l’importance de fournir un grand nombre d'articles d'entraînement, pour couvrir un vocabulaire important, mais aussi pour éviter un biais. Le biais peut intervenir par exemple, avec trop peu d’articles, sur les expressions de type “pas trop mal” qui sont dans un article positif, mais qui pourrait finir par associer le mot “mal” à un article positif.
-C’est aussi une des limites de cette méthode, les expressions ironiques ou autres plus subtiles ne peuvent pas être comprises par cet algorithme simple.
-L’avantage principal de cet algorithme est sa simplicité et sa facile interprétation: un article est positif s' il contient plus de mots d’articles entraînés positifs que négatifs.
-
-Nous allons tester quatre variations d’inputs possibles de cet algorithme et comparer leurs performances:
+Notre échantillon d'entrainement est constitué de 158 articles, à qui ont a attribué un label positif/négatif. Mais en fait, nous avont quatre échantillons d'entrainements possibles, qui représente les mêmes articles mais peuvent nous conduire à des résultats différents. (Voir **Naive_Bayes_Parisien.py**)
+Nous allons donc tester quatre variations d’inputs possibles de cet estimateur et comparer leurs performances:
  - les articles non-modifiés ;
- - les articles dont les “stopwords”, ou mots vides, sans importances pour le sentiment, ont été enlevés ;
  - les articles où la ponctuation a été enlevé;
+ - les articles dont les “stopwords”, ou mots vides, sans importances pour le sentiment, ont été enlevés (ainsi que la ponctuation) ;
  - les articles où uniquement la source du mot a été préservée.
- (Voir **Naive_Bayes_Parisien.py**)
+ Après avoir dédié 85% à notre partie train et les 15 % restant au test et répété 100 fois leur répartition aléatoire, nous avons une moyenne des résultats suivants:
  
- ## Brèche
+ /mettre tableau précision/écart-type
+
+Le package nltk.NaiveBayesClassifier a permis de faire ce calcul. Les mots inconnus par la base d'entraînement apparaissant dans les nouveaux articles sont ignorés dans nos calculs. Ceci montre l’importance de fournir un grand nombre d'articles d'entraînement, pour couvrir un vocabulaire important, mais aussi pour éviter un biais. Le biais peut intervenir par exemple, avec trop peu d’articles, sur les expressions de type “pas trop mal” qui sont dans un article positif, mais qui pourrait finir par associer le mot “mal” à un article positif.
+
+Nous avons realiser un test simple de notre classifieur qui exclut les mots vides, en reprenant trois expressions commune qui peuvent apparaitre dans un texte et nous avons eu les resultats suivants:
+
+\mettre image pour bien,mal et pas si bien que ca
+
+On observe que c'est une des limites de cette méthode, les expressions ironiques ou autres, plus subtiles, ne peuvent pas être comprises par cet algorithme simple.
+
+L’avantage principal de cet algorithme est sa simplicité et sa facile interprétation: un article est positif s'il contient plus de mots d’articles entraînés positifs que négatifs.
+ 
+ ## Conclusion et limites 
+ 
+ 
+ #### Brèche
  
  Le scraping des articles à l’aide de beautifulsoup nous a permis de récupérer l’ensemble des articles et a révélé une faille dans le système des articles réservés aux abonnés. En effet, tous les sites de presse française ont une section réservée pour leurs abonnés et notre programme permet de contourner ce système en lisant le contenu de l'article directement sur le logiciel de programmation ou dans les cases du fichier Excel de notre base de données préparée.

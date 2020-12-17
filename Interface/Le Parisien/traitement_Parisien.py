@@ -98,14 +98,12 @@ recupererPDG(df)
 detientMedia(df)        
 
 
-#Recupération de la base initiale sur les articles Le Parisien afin de réaliser un résumé
-#pour chaque article suite à un oubli de notre part de garder le texteOriginal dans la dataframe
-
+# Recupération de la base initiale sur les articles Le Parisien afin de réaliser un résumé
+# pour chaque article suite à un oubli de notre part de garder le texteOriginal 
+# dans la dataframe
 df=pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_parisien2_traitement.csv")
 
 df_o = pd.read_csv("C:/Users/idel/Desktop/M2/Python/le_parisien2.csv")
-
-
 
 df_o.drop_duplicates(keep=False,inplace=True) 
 df_o.reset_index(drop=True,inplace=True)
@@ -126,9 +124,7 @@ df["Resume"]=''
 for i in range(len(df)):
         df["Resume"][i]=summarizePassage(df_o['0'][i])
     
-
-
-
+#Exportation:
 df.to_csv('C:/Users/idel/Desktop/M2/Python/le_parisien2_traitement.csv',index = False, header=True)
 
 

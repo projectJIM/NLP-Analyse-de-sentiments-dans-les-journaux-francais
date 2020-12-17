@@ -33,7 +33,7 @@ On a aussi rajouté dans nos dataframes finales la variable “résumé” qui p
 ## Traitement de texte 
 
 Nous avons utilisé le package NLTK pour faire plusieurs variantes de textes qui seront utilisé plus tard dans l'analyse: sans les mots vides, la ponctuation ou tout en cherchant la source du mot. 
-De plus, dans cette partie nous avons identifier si un article contenait ou pas mention d'une entreprise proche du journal, dans ce cas Le Parisien, donc une entreprise faisant partie du groupe LVMH. (Voir **NLP_Parisien.py**)
+De plus, dans cette partie nous avons identifier si un article contenait ou pas mention d'une entreprise proche du journal, dans ce cas Le Parisien, donc une entreprise faisant partie du groupe LVMH. Ceci a été fait à l'aide du package spaCy. (Voir **NLP_Parisien.py**)
 
 ## L'estimateur de Bayes 
 

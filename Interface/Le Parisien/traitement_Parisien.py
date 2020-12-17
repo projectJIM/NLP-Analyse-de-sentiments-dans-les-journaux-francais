@@ -1,25 +1,24 @@
-
-
 ##################################################################################
-#########  1. Importing the corpora with news articles ###########################
+############# IMPORTATION ET TRAITEMENT DE LA BDD AVEC ARTICLES ##################
 ##################################################################################
 
+# Les articles ont été scrappé en plusieurs fois et mis dans le fichier local le_parisien
 import pandas as pd
-
 import glob
 
 df = pd.DataFrame()
-for file_name in glob.glob('C:/Users/idel/Desktop/M2/Python/le_parisien2.csv'):
+for file_name in glob.glob('chemin/le_parisien/*.csv'):
     x = pd.read_csv(file_name)
     df = pd.concat([df,x],axis=0)
     
 del x
 del file_name
 
-# dropping duplicate values 
+# Enlever si un même article a été scrappé plus d'une fois
 df.drop_duplicates(keep=False,inplace=True) 
 df.reset_index(drop=True,inplace=True)
 
+# Enlever les articles dont le texte n'a pas pu être scrappé
 dl=[]
 for i in range(0,len(df)):
         if df['0'][i]=='[]':
@@ -27,6 +26,8 @@ for i in range(0,len(df)):
 df.drop(index=dl,inplace=True)
 del dl
 
+# Création de nouvelles colonnes: la catégorie, le titre, le jour, le mois et l'année 
+# de l'article
 dft=df['1'].str.split("/", expand=True)
 df['categorie']=dft[3]
 
@@ -35,11 +36,9 @@ df['jour']=dftt[1]
 df['mois']=dftt[2]
 df['an']=dftt[3]
 
-
 dfttt=dftt[0].str.rsplit(pat="/",n=1,expand=True)
 df['titre']=dfttt[1].str.replace('-', ' ').str.title()
 
-    
 df=df.rename(columns={'0': 'texte','1':'lien'})
 
 del dft 
@@ -47,57 +46,22 @@ del dftt
 del dfttt
 df.reset_index(drop=True,inplace=True)
 
+# Création de la colonne ident qui sera utilisé plus tard pour identifier les entreprises 
+# proche du Parisien
 df['ident']='Non'
 
 
+# Exporter la dataframe traitée dans un nouveau csv 
 path=r"C:\Users\jovan\OneDrive\Radna površina\Paris 1\NLP_2\data\le_parisien_tr.csv"
-
 df.to_csv(path, index = False, header=True)
 
-######################Imad #############
 
-#Article Le Parisien:
+##################################################################################
+##############  CREATION DE LA BDD D'ARTICLES POUR L'INTERFACE ###################
+##################################################################################
 
-import glob
-
-df = pd.DataFrame()
-for file_name in glob.glob('C:/Users/idel/Desktop/M2/Python/le_parisien2.csv'):
-    x = pd.read_csv(file_name)
-    df = pd.concat([df,x],axis=0)
-    
-del x
-del file_name
-
-# dropping duplicate values 
-df.drop_duplicates(keep=False,inplace=True) 
-df.reset_index(drop=True,inplace=True)
-
-dl=[]
-for i in range(0,len(df)):
-        if df['0'][i]=='[]':
-            dl.append(i)
-df.drop(index=dl,inplace=True)
-del dl
-
-dft=df['1'].str.split("/", expand=True)
-df['categorie']=dft[3]
-
-dftt=df['1'].str.rsplit(pat="-",n=4,expand=True)
-df['jour']=dftt[1]
-df['mois']=dftt[2]
-df['an']=dftt[3]
-
-
-dfttt=dftt[0].str.rsplit(pat="/",n=1,expand=True)
-df['titre']=dfttt[1].str.replace('-', ' ').str.title()
-
-del dfttt
-del dftt
-del dft
-    
-
-
-df=df.rename(columns={'0': 'Texte','1':'lien','titre':'Titre'})
+#Les colonnes suivantes sont crées:
+df=df.rename(columns={'texte': 'Texte','titre':'Titre'})
 df['localisation']=''
 df['personne']=''
 df['entreprise']=''
@@ -114,19 +78,22 @@ df.drop(['index'],axis=1,inplace=True)
  
 #Appel de la fonction pour nettoyer nos articles
 nettoyageArticle(df)
+
 #Appel de la fonction qui nous permet d'ajouter les informations dans la dataframe 
 ajout_TAG(df)
+
 #Appel de la fonction pour ajouter un sentiment positif ou pas    
 ajoutSentiment(df)
+
 #Ajout de l'entreprise concernée par l'article
-
-
 ajoutEntreprise(df)
 
+#Ajout de la localisation de l'entreprise
 ajoutLocalisation(df)
 
 #Ajout du nom du PDG
 recupererPDG(df)
+
 #Ajout de la Collusion oui ou Non 
 detientMedia(df)        
 

@@ -36,7 +36,10 @@ Nous avons utilisé le package NLTK pour faire plusieurs variantes de textes qui
 De plus, dans cette partie nous avons identifier si un article contenait ou pas mention d'une entreprise proche du journal, dans ce cas Le Parisien, donc une entreprise faisant partie du groupe LVMH. Ceci a été fait à l'aide du package spaCy. (Voir **NLP_Parisien.py**)
 
 Voici deux graphiques qui illustrent l'importance de cette étape. Le premier représente la fréquence d'apparition de mots dans un article du Parisien non traité, et le deuxième montre la fréquence dans le cas ou les mots vides ont été enlevé.  
-\mettre image avec le decompte du mots des differents types de textes
+
+![Texte brut freq](https://github.com/projectJIM/NLP/blob/main/Interface/Le_Parisien/Count_tokens.png?raw=true) 
+
+![Texte sans mots vide freq](https://github.com/projectJIM/NLP/blob/main/Interface/Le_Parisien/Count_tokens_sw.png?raw=true) 
 
 La différence est significative. Dans le premier cas, les mots qui auront un poids plus important dans de nombreuses analyses (par exemple dans l'estimateur Bayesien - voir la partie suivante) sont des mots relativement insignifiant. Dans le deuxième cas, ces mots vides sont mis à l'écart et la thématique de l'article peut être déduit en regardant uniquement ce graphique de fréquence. Or, les stopwords (mots vides) ont une signification, voir par exemple le test fait à la fin de la partie suivante.
 

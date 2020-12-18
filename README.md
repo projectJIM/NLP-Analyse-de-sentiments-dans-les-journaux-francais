@@ -31,7 +31,8 @@ En cliquant sur la **Recherche Entreprise**, l'utilisateur peut faire défiler l
 
 ![Interface](https://github.com/projectJIM/NLP/blob/main/Interface/Interface.png?raw=true)
 
-Par ailleurs en cliquant sur l'un des boutons associés aux articles, une nouvelle interface invitera l'utilisateur à rentrer le titre de l'article afin de visualiser l'article ainsi que ses caractéristiques (PDG, nom de l'entreprise, positivité et la localisation). Pour se faire l'utilisateur doit rentrer le titre de l'article présent sur la partie haut de l'interface, la manière la plus simple est de copier-coller le titre présent sur la partie haute de l'interface à l'aide d'un CTRL+C et CTRL+V et ainsi mettre le titre dans la barre de recherche.
+Par ailleurs en cliquant sur l'un des boutons associés aux articles, une nouvelle interface invitera l'utilisateur à rentrer le titre de l'article afin de visualiser l'article ainsi que ses caractéristiques (PDG, nom de l'entreprise, positivité et la localisation). Pour ce faire, l'utilisateur doit rentrer le titre de l'article présent sur la partie haut de l'interface, la manière la plus simple est de copier-coller le titre présent sur la partie haute de l'interface à l'aide d'un CTRL+C et CTRL+V et ainsi mettre le titre dans la barre de recherche.
+L'avis sur l'article a été calculé avec le package Vader, car nous n'avions pas le temps d'intégrer notre classifieur Bayesien dans l'interface.
 
 Ci-dessous, le lien nous dresse la situation actuelle pour tous les organes de presse français afin de savoir quelles entreprises ou personnes sont actionnaires (majoritaires / minoritaires) dans un organe de presse. Nous ferons à la fin une analyse des articles du Parisien sur le groupe LVMH.
 

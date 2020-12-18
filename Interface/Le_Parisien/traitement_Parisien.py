@@ -76,6 +76,8 @@ df = df[['lien','Titre','localisation','Texte','personne','entreprise','Positive
 df.reset_index(inplace=True)
 df.drop(['index'],axis=1,inplace=True)
  
+# Les fonctions suivantes sont définis dans article_LeMonde.py
+
 #Appel de la fonction pour nettoyer nos articles
 nettoyageArticle(df)
 

@@ -26,6 +26,9 @@ Dans le cas du journal “Le Parisien”, l’actionnaire majoritaire est Bernar
 
 En ouvrant l'interface à partir du fichier **Interface.py**, l'utilisateur a le choix entre une lecture des articles du Monde ou du Parisien, et également de réaliser une recherche concernant les entreprises comprises au sein de notre database. 
 En cliquant sur la **Recherche Entreprise**, l'utilisateur , peut faire défiler la liste des entreprises se trouvant sur la partie supérieure de l'interface à l'aide de sa souris ou bien de son clavier, et afin de visualiser le PDG de l'entreprise ainsi que le nombre d'articles considérés comme positive ou négative, il lui suffit d'entrer le nom de l'entreprise dans la barre de recherche.
+
+![Interface](https://github.com/projectJIM/NLP/blob/main/Interface/Interface.png?raw=true)
+
 Par ailleurs en cliquant sur l'un des boutons associés aux articles, une nouvelle interface invitera l'utilisateur à rentrer le titre de l'article afin de visualiser l'article ainsi que ses caractéristiques (PDG,nom de l'entreprise,positive et la localisation). Pour se faire l'utilisateur doit rentrer le titre de l'article présent sur la partie haut de l'interface, la manière la plus simple et copier-coller le titre présent sur la partie haute de l'interface à l'aide d'un CTRL+C et CTRL+V et ainsi mettre le titre dans la bar de recherche.
 
 Ci-dessous, le lien nous dresse la situation actuelle pour tous les organes de presse français afin de savoir quelles entreprises ou personnes sont actionnaires (majoritaires / minoritaires) dans un organe de presse. Nous ferons à la fin une analyse des articles du Parisien sur le groupe LVMH.
@@ -97,7 +100,7 @@ Négatif|   6    | <7>
 
 Ceci n'est qu'un exemple, et la matrice de confusion change en reprenant les calcus. Parmi les 24 articles dans notre base test, on observe que dans chaque instance, il y a en général plus de faux négatifs que de faux positifs. L'estimateur peut donc avoir tendance de mettre un label positif plus facilement qu'il ne le devrait avoir. Or, il faut savoir que notre base train-test contenait initialement plus d'articles négatif, ce qui est certainement un facteur qui a eu une influence sur ces résultats. 
 
-Le package nltk.NaiveBayesClassifier nous a permis de faire ces calculs. Les mots inconnus par la base d'entraînement et apparaissant dans les nouveaux articles (test) sont ignorés dans les calculs de probabilité. Ceci montre l’importance de fournir un grand nombre d'articles d'entraînement, pour couvrir un vocabulaire important, mais aussi pour éviter un biais. Le biais peut intervenir par exemple, avec trop peu d’articles, sur les expressions de type “pas trop mal” qui sont dans un article positif, mais qui pourrait finir par associer le mot “mal” à un article positif.
+Le package nltk.NaiveBayesClassifier nous a permis de faire ces calculs. Les mots inconnus par la base d'entraînement et apparaissant dans les nouveaux articles (test) sont ignorés dans les calculs de probabilité. Ceci montre l’importance de fournir un grand nombre d'articles d'entraînement, pour couvrir un vocabulaire important, mais aussi pour éviter un biais. Le biais peut intervenir par exemple, avec trop peu d’articles, sur les expressions de type “pas si bien que” qui sont positives selon notre estimateur, et qui pourrait finir par associer l'expression à un article positif.
 
 Nous avons réaliser un test simple de notre classifieur qui exclut les mots vides, en reprenant trois expressions commune qui peuvent apparaitre dans un texte et nous avons eu les résultats suivants: (le code se trouve dans la partie "Avis de la phrase ou du mot" de **Naive_Bayes_Parisien.py**)
 

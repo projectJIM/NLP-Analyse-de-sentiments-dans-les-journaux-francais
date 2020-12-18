@@ -24,6 +24,8 @@ Par exemple, dans un premier temps, le projet devait se centrer exclusivement su
 Pour aller plus loin dans le projet, nous avons aussi décidé d’extraire, si cela est possible, le PDG de l’entreprise décrite et sa localisation géographique. De plus, nous voulons aussi savoir si l’entreprise a un potentiel lien économique (ou financier) avec le journal, c'est-à-dire que l’entreprise à des parts de marché dans le journal. 
 Dans le cas du journal “Le Parisien”, l’actionnaire majoritaire est Bernard Arnault, et son entreprise LVMH détient à 100% le groupe de presse “Le Parisien”. Pour “Le Monde” on dénombre trois actionnaires majoritaires, Xavier Niel le fondateur d'Iliad, maison mère de Free, Matthieu Pigasse et le tchèque Daniel Kretinsky. (Voir **traitement_Parisien.py**) (Voir **traitement_article_Lemonde_Generale.py**) (Voir **article_LeMonde.py**).
 
+## Interface
+
 En ouvrant l'interface à partir du fichier **Interface.py**, l'utilisateur a le choix entre une lecture des articles du Monde ou du Parisien, et également de réaliser une recherche concernant les entreprises comprises au sein de notre database. 
 En cliquant sur la **Recherche Entreprise**, l'utilisateur , peut faire défiler la liste des entreprises se trouvant sur la partie supérieure de l'interface à l'aide de sa souris ou bien de son clavier, et afin de visualiser le PDG de l'entreprise ainsi que le nombre d'articles considérés comme positive ou négative, il lui suffit d'entrer le nom de l'entreprise dans la barre de recherche.
 

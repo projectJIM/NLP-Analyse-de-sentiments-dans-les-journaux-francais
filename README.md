@@ -26,6 +26,8 @@ Dans le cas du journal “Le Parisien”, l’actionnaire majoritaire est Bernar
 
 Ci-dessous, le lien nous dresse la situation actuelle pour tous les organes de presse français afin de savoir quelles entreprises ou personnes sont actionnaires (majoritaires / minoritaires) dans un organe de presse. Nous ferons à la fin une analyse des articles du Parisien sur le groupe LVMH.
 
+![Monde](https://github.com/projectJIM/NLP/blob/main/Interface/medias_francais.png?raw=true)
+
 Lien de l’article : https://www.monde-diplomatique.fr/cartes/PPA
 
 On a aussi rajouté dans nos dataframes finales la variable “résumé” qui permet d’afficher avec seulement 20% du texte traité les grandes lignes de l’article.
